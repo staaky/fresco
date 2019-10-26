@@ -1,0 +1,26 @@
+{
+  "name": "@staaky/fresco",
+  "title": "Fresco",
+  "version": "2.3.0",
+  "description": "A Beautiful Responsive Lightbox",
+  "author": {
+    "name": "Nick Stakenburg",
+    "url": "http://www.nickstakenburg.com"
+  },
+  "main": "dist/js/fresco.js",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/npm/cli.git"
+  },
+  "license": "CC-BY-4.0",
+  "devDependencies": {
+    "grunt": "^1.0.4",
+    "grunt-contrib-clean": "^2.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^4.0.1",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-string-replace": "^1.3.1",
+    "prettier": "1.18.2"
+  }
+}
