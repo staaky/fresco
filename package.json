@@ -1,7 +1,7 @@
 {
   "name": "@staaky/fresco",
   "title": "Fresco",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A Beautiful Responsive Lightbox",
   "author": {
     "name": "Nick Stakenburg",
@@ -10,9 +10,17 @@
   "main": "dist/js/fresco.js",
   "repository": {
     "type" : "git",
-    "url" : "https://github.com/npm/cli.git"
+    "url" : "https://github.com/staaky/fresco.git"
   },
   "license": "CC-BY-4.0",
+  "keywords": [
+    "lightbox",
+    "modal",
+    "window",
+    "responsive",
+    "jquery",
+    "jquery-plugin"
+  ],
   "devDependencies": {
     "grunt": "^1.0.4",
     "grunt-contrib-clean": "^2.0.0",
