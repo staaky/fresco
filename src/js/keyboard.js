@@ -6,7 +6,7 @@ var Keyboard = {
   keyCode: {
     left: 37,
     right: 39,
-    esc: 27
+    esc: 27,
   },
 
   // enable is passed the keyboard option of a page, which can be false
@@ -17,8 +17,8 @@ var Keyboard = {
     if (!enabled) return;
 
     $(document)
-      .on("keydown", (this._onKeyDownHandler = $.proxy(this.onKeyDown, this)))
-      .on("keyup", (this._onKeyUpHandler = $.proxy(this.onKeyUp, this)));
+      .on("keydown", (this._onKeyDownHandler = this.onKeyDown.bind(this)))
+      .on("keyup", (this._onKeyUpHandler = this.onKeyUp.bind(this)));
 
     this.enabled = enabled;
   },
@@ -73,5 +73,5 @@ var Keyboard = {
       if (this.keyCode[key] === keyCode) return key;
     }
     return null;
-  }
+  },
 };

@@ -99,7 +99,7 @@ var Window = {
     if (this._onWindowResizeHandler) return;
     $(window).on(
       "resize orientationchange",
-      (this._onWindowResizeHandler = $.proxy(this._onWindowResize, this))
+      (this._onWindowResizeHandler = this._onWindowResize.bind(this))
     );
   },
 
@@ -110,22 +110,10 @@ var Window = {
     }
   },
 
-  /*startObservingScroll: function() {
-    if (this._onScrollHandler) return;
-    $(window).on('scroll', this._onScrollHandler = $.proxy(this._onScroll, this));
-  },
-
-  stopObservingScroll: function() {
-    if (this._onScrollHandler) {
-      $(window).off('scroll', this._onScrollHandler);
-      this._onScrollHandler = null;
-    }
-  },*/
-
   _onScroll: function() {
     if (!Support.mobileTouch) return;
     // the timeout is a hack for iOS not responding
-    this.timers.set("scroll", $.proxy(this.adjustToScroll, this), 0);
+    this.timers.set("scroll", this.adjustToScroll.bind(this), 0);
   },
 
   _onWindowResize: function() {
@@ -159,8 +147,7 @@ var Window = {
     if (!Support.mobileTouch) return;
 
     this.element.css({
-      //left: $(window).scrollLeft(),
-      top: $(window).scrollTop()
+      top: $(window).scrollTop(),
     });
   },
 
@@ -181,13 +168,13 @@ var Window = {
       width: isHorizontal ? viewport.width : viewport.width - thumbnails.width,
       height: isHorizontal
         ? viewport.height - thumbnails.height
-        : viewport.height
+        : viewport.height,
     };
 
     // resize
     this._boxPosition = {
       top: 0,
-      left: isHorizontal ? 0 : thumbnails.width
+      left: isHorizontal ? 0 : thumbnails.width,
     };
 
     this._box.css($.extend({}, this._boxDimensions, this._boxPosition));
@@ -212,7 +199,7 @@ var Window = {
     this.adjustToScroll();
 
     var duration =
-      ($.type(alternateDuration) === "number"
+      (typeof alternateDuration === "number"
         ? alternateDuration
         : Pages.page && Pages.page.view.options.effects.window.show) || 0;
 
@@ -231,22 +218,22 @@ var Window = {
     // because the fading happens on top of a solid area
     this.timers.set(
       "show-window",
-      $.proxy(function() {
+      function() {
         this._show(
-          $.proxy(function() {
+          function() {
             this.opening = false;
             if (callback && --fx < 1) callback();
-          }, this),
+          }.bind(this),
           duration
         );
-      }, this),
+      }.bind(this),
       duration > 1 ? Math.min(duration * 0.5, 50) : 1
     );
   },
 
   _show: function(callback, alternateDuration) {
     var duration =
-      ($.type(alternateDuration) === "number"
+      (typeof alternateDuration === "number"
         ? alternateDuration
         : Pages.page && Pages.page.view.options.effects.window.show) || 0;
 
@@ -266,18 +253,18 @@ var Window = {
     var duration = Pages.page ? Pages.page.view.options.effects.window.hide : 0;
 
     hideQueue.queue(
-      $.proxy(function(next_stop) {
+      function(next_stop) {
         Pages.stop();
 
         // hide the spinner here so its effect ends early enough
         Spinner.hide();
 
         next_stop();
-      }, this)
+      }.bind(this)
     );
 
     hideQueue.queue(
-      $.proxy(function(next_unbinds) {
+      function(next_unbinds) {
         // ui
         UI.disable();
         UI.hide(null, duration);
@@ -286,11 +273,11 @@ var Window = {
         Keyboard.disable();
 
         next_unbinds();
-      }, this)
+      }.bind(this)
     );
 
     hideQueue.queue(
-      $.proxy(function(next_hidden) {
+      function(next_hidden) {
         var fx = 2;
 
         this._hide(function() {
@@ -300,24 +287,24 @@ var Window = {
         // using a timeout here removes a sharp visible edge of the window while fading out
         this.timers.set(
           "hide-overlay",
-          $.proxy(function() {
+          function() {
             Overlay.hide(function() {
               if (--fx < 1) next_hidden();
             }, duration);
-          }, this),
+          }.bind(this),
           duration > 1 ? Math.min(duration * 0.5, 150) : 1
         );
 
         // after we initiate hide, the next show() should bring up the UI
         // we to this using a flag
         this._first = true;
-      }, this)
+      }.bind(this)
     );
 
     // callbacks after resize in a separate queue
     // so we can stop the hideQueue without stopping the resize
     hideQueue.queue(
-      $.proxy(function(next_after_resize) {
+      function(next_after_resize) {
         this._reset();
 
         // all of the below we cannot safely call safely
@@ -334,7 +321,7 @@ var Window = {
 
         // afterHide callback
         var afterHide = Pages.page && Pages.page.view.options.afterHide;
-        if ($.type(afterHide) === "function") {
+        if (typeof afterHide === "function") {
           afterHide.call(Fresco);
         }
 
@@ -346,22 +333,22 @@ var Window = {
         this.detach();
 
         next_after_resize();
-      }, this)
+      }.bind(this)
     );
 
-    if ($.type(callback) === "function") {
+    if (typeof callback === "function") {
       hideQueue.queue(
-        $.proxy(function(next_callback) {
+        function(next_callback) {
           callback();
           next_callback();
-        }, this)
+        }.bind(this)
       );
     }
   },
 
   _hide: function(callback, alternateDuration) {
     var duration =
-      ($.type(alternateDuration) === "number"
+      (typeof alternateDuration === "number"
         ? alternateDuration
         : Pages.page && Pages.page.view.options.effects.window.hide) || 0;
 
@@ -422,9 +409,9 @@ var Window = {
     // store the page and show it
     this.page = Pages.show(
       position,
-      $.proxy(function() {
+      function() {
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -489,7 +476,7 @@ var Window = {
 
     return {
       previous: previous,
-      next: next
+      next: next,
     };
-  }
+  },
 };

@@ -15,9 +15,9 @@ var Pages = {
     // add pages for all these views
     $.each(
       views,
-      $.proxy(function(i, view) {
+      function(i, view) {
         this.pages.push(new Page(view, i + 1, this.views.length));
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -38,9 +38,9 @@ var Pages = {
     Window.updateBoxDimensions(); // these are based on Thumbnails, so after thumbnails
 
     page.show(
-      $.proxy(function() {
+      function() {
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -81,11 +81,11 @@ var Pages = {
 
     $.each(
       this.pages,
-      $.proxy(function(i, page) {
+      function(i, page) {
         if (page.uid !== this.page.uid) {
           _pages.push(page);
         }
-      }, this)
+      }.bind(this)
     );
 
     var fx = 0 + _pages.length;
@@ -106,11 +106,11 @@ var Pages = {
   stopInactive: function() {
     $.each(
       this.pages,
-      $.proxy(function(i, page) {
+      function(i, page) {
         if (page.uid !== this.page.uid /* && !page.preloading*/) {
           page.stop();
         }
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -128,10 +128,10 @@ var Pages = {
       this.updatePositions();
     } else {
       this._tracking_timer = setTimeout(
-        $.proxy(function() {
+        function() {
           this.setXY({ x: event.pageX, y: event.pageY });
           this.updatePositions();
-        }, this),
+        }.bind(this),
         30
       );
     }
@@ -151,7 +151,7 @@ var Pages = {
     // shift x/y positions to get a correct position after load.
     $(document.documentElement).on(
       "mousemove",
-      (this._handleTracking = $.proxy(this.handleTracking, this))
+      (this._handleTracking = this.handleTracking.bind(this))
     );
   },
 
@@ -224,7 +224,7 @@ var Pages = {
     var xyp = {
       //x: Math.min(Math.max(xy.x / dimensions.width, 0), 1),
       x: 0,
-      y: Math.min(Math.max(xy.y / dimensions.height, 0), 1)
+      y: Math.min(Math.max(xy.y / dimensions.height, 0), 1),
     };
 
     // safety should be a percentage
@@ -234,7 +234,7 @@ var Pages = {
 
     $.each(
       "y".split(" "),
-      $.proxy(function(i, z) {
+      function(i, z) {
         // safety should be a percentage, so convert pixel to %
         safety[z] = Math.min(Math.max(safetyPX / dimensions[wh[z]], 0), 1);
 
@@ -242,7 +242,7 @@ var Pages = {
         xyp[z] *= 1 + 2 * safety[z]; // increase the range by 2*%
         xyp[z] -= safety[z]; // shift back by %
         xyp[z] = Math.min(Math.max(xyp[z], 0), 1); // chop of the sides
-      }, this)
+      }.bind(this)
     );
 
     this.setXYP(xyp);
@@ -261,5 +261,5 @@ var Pages = {
     $.each(this._tracking, function(i, page) {
       page.position();
     });
-  }
+  },
 };

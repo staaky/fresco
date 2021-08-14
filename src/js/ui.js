@@ -6,16 +6,16 @@ var UI = {
     ".fr-content-element",
     ".fr-content",
     ".fr-content > .fr-stroke",
-    ".fr-content > .fr-stroke .fr-stroke-color"
+    ".fr-content > .fr-stroke .fr-stroke-color",
   ].join(", "),
 
   initialize: function(element) {
     // initialize the 3 different UI types
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         this[mode].initialize();
-      }, this)
+      }.bind(this)
     );
 
     // start with hidden ui
@@ -55,9 +55,9 @@ var UI = {
   enable: function() {
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         UI[mode][mode === this._ui ? "enable" : "disable"]();
-      }, this)
+      }.bind(this)
     );
 
     this._enabled = true;
@@ -66,9 +66,9 @@ var UI = {
   disable: function() {
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         UI[mode].disable();
-      }, this)
+      }.bind(this)
     );
 
     this._enabled = false;
@@ -93,9 +93,9 @@ var UI = {
   reset: function() {
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         UI[mode].reset();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -104,13 +104,5 @@ var UI = {
     if (!page) return;
 
     this.set(page._ui);
-  } /*,
-
-  // sets the ui to use timers for and disabled timers
-  // on all other ui modes
-  setActiveTimers: function(ui) {
-    $.each(this._modes, function(i, mode) {
-      if (mode != ui) UI[mode].clearTimer();
-    });
-  }*/
+  },
 };

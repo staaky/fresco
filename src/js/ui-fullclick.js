@@ -50,26 +50,26 @@ UI.fullclick = {
     // events
     this._close.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         event.preventDefault();
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     this._previous.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.previous();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
 
     this._next.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.next();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -112,18 +112,18 @@ UI.fullclick = {
     Window._pages.on(
       "mouseup",
       ".fr-container",
-      (this._onMouseUpHandler = $.proxy(this._onMouseUp, this))
+      (this._onMouseUpHandler = this._onMouseUp.bind(this))
     );
 
     // track <> only on desktop
     if (!Support.mobileTouch) {
       Window.element
-        .on("mouseenter", (this._showHandler = $.proxy(this.show, this)))
-        .on("mouseleave", (this._hideHandler = $.proxy(this.hide, this)));
+        .on("mouseenter", (this._showHandler = this.show.bind(this)))
+        .on("mouseleave", (this._hideHandler = this.hide.bind(this)));
 
       Window.element.on(
         "mousemove",
-        (this._mousemoveHandler = $.proxy(function(event) {
+        (this._mousemoveHandler = function(event) {
           // Chrome has a bug that triggers mousemove events incorrectly
           // we have to work around this by comparing cursor positions
           // so only true mousemove events pass through:
@@ -141,7 +141,7 @@ UI.fullclick = {
 
           this.show();
           this.startTimer();
-        }, this))
+        }.bind(this))
       );
 
       // delegate <> mousemove/click states
@@ -149,17 +149,17 @@ UI.fullclick = {
         .on(
           "mousemove",
           ".fr-container",
-          (this._onMouseMoveHandler = $.proxy(this._onMouseMove, this))
+          (this._onMouseMoveHandler = this._onMouseMove.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-container",
-          (this._onMouseLeaveHandler = $.proxy(this._onMouseLeave, this))
+          (this._onMouseLeaveHandler = this._onMouseLeave.bind(this))
         )
         .on(
           "mouseenter",
           ".fr-container",
-          (this._onMouseEnterHandler = $.proxy(this._onMouseEnter, this))
+          (this._onMouseEnterHandler = this._onMouseEnter.bind(this))
         );
 
       // delegate moving onto the <> buttons
@@ -168,23 +168,17 @@ UI.fullclick = {
         .on(
           "mouseenter",
           ".fr-side",
-          (this._onSideMouseEnterHandler = $.proxy(
-            this._onSideMouseEnter,
-            this
-          ))
+          (this._onSideMouseEnterHandler = this._onSideMouseEnter.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-side",
-          (this._onSideMouseLeaveHandler = $.proxy(
-            this._onSideMouseLeave,
-            this
-          ))
+          (this._onSideMouseLeaveHandler = this._onSideMouseLeave.bind(this))
         );
 
       $(window).on(
         "scroll",
-        (this._onScrollHandler = $.proxy(this._onScroll, this))
+        (this._onScrollHandler = this._onScroll.bind(this))
       );
     }
   },
@@ -242,7 +236,7 @@ UI.fullclick = {
       css = { "margin-top": pnMarginTop - iH * 0.5 };
 
     var duration =
-      $.type(alternateDuration) === "number"
+      typeof alternateDuration === "number"
         ? alternateDuration
         : (Pages.page && Pages.page.view.options.effects.content.show) || 0;
 
@@ -382,7 +376,7 @@ UI.fullclick = {
       // and start a new one
       this.startTimer();
 
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -401,14 +395,14 @@ UI.fullclick = {
         .show();
     }
 
-    if ($.type(callback) === "function") callback();
+    if (typeof callback === "function") callback();
   },
 
   hide: function(callback) {
     // never hide the ui for video
     var type = Pages.page && Pages.page.view.type;
     if (!this._visible || (type && (type === "youtube" || type === "vimeo"))) {
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -435,10 +429,10 @@ UI.fullclick = {
     this.clearTimer();
     Window.timers.set(
       "ui-fullclick",
-      $.proxy(function() {
+      function() {
         this.hide();
-      }, this),
+      }.bind(this),
       Window.view ? Window.view.options.uiDelay : 0
     );
-  }
+  },
 };

@@ -7,7 +7,7 @@ $.extend(View.prototype, {
       data = {};
 
     // string -> element
-    if ($.type(object) === "string") {
+    if (typeof object === "string") {
       // turn the string into an element
       object = { url: object };
     }
@@ -26,7 +26,7 @@ $.extend(View.prototype, {
         options:
           (element.attr("data-fresco-options") &&
             eval("({" + element.attr("data-fresco-options") + "})")) ||
-          {}
+          {},
       };
     }
 
@@ -63,5 +63,5 @@ $.extend(View.prototype, {
     $.extend(this, object);
 
     return this;
-  }
+  },
 });

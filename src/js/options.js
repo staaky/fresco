@@ -5,19 +5,19 @@ var Options = {
       spinner: { show: 150, hide: 150 },
       window: { show: 440, hide: 300 },
       thumbnail: { show: 300, delay: 150 },
-      thumbnails: { slide: 0 }
+      thumbnails: { slide: 0 },
     },
     keyboard: {
       left: true,
       right: true,
-      esc: true
+      esc: true,
     },
     loadedMethod: "naturalWidth",
     loop: false,
     onClick: "previous-next",
     overflow: false,
     overlay: {
-      close: true
+      close: true,
     },
     preload: [1, 2],
     position: true,
@@ -34,7 +34,7 @@ var Options = {
       title: 1,
       byline: 1,
       portrait: 0,
-      loop: 0
+      loop: 0,
     },
     youtube: {
       autoplay: 1,
@@ -46,22 +46,22 @@ var Options = {
       loop: 0,
       modestbranding: 1,
       rel: 0,
-      vq: "hd1080" // force hd: http://stackoverflow.com/a/12467865
+      vq: "hd1080", // force hd: http://stackoverflow.com/a/12467865
     },
 
     initialTypeOptions: {
       image: {},
       vimeo: {
-        width: 1280
+        width: 1280,
       },
       // Youtube needs both dimensions, it doesn't support fetching video dimensions like Vimeo yet.
       // Star this ticket if you'd like to get support for it at some point:
       // https://code.google.com/p/gdata-issues/issues/detail?id=4329
       youtube: {
         width: 1280,
-        height: 720
-      }
-    }
+        height: 720,
+      },
+    },
   },
 
   create: function(opts, type, data) {
@@ -114,7 +114,7 @@ var Options = {
     // keyboard
     if (options.keyboard) {
       // when keyboard is true, enable all keys
-      if ($.type(options.keyboard) === "boolean") {
+      if (typeof options.keyboard === "boolean") {
         options.keyboard = {};
         $.each(this.defaults.keyboard, function(key, bool) {
           options.keyboard[key] = true;
@@ -133,7 +133,7 @@ var Options = {
       // false
       options.overflow = { x: false, y: false };
     } else {
-      if ($.type(options.overflow) === "boolean") {
+      if (typeof options.overflow === "boolean") {
         // true
         options.overflow = { x: false, y: true };
       }
@@ -163,7 +163,7 @@ var Options = {
     }
 
     // youtube thumbnails
-    if (!options.thumbnail && $.type(options.thumbnail) !== "boolean") {
+    if (!options.thumbnail && typeof options.thumbnail !== "boolean") {
       // only continue if undefined, forced false stays false
       var thumbnail = false;
 
@@ -188,5 +188,5 @@ var Options = {
     }
 
     return options;
-  }
+  },
 };

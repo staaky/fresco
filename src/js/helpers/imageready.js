@@ -10,7 +10,7 @@ $.extend(ImageReady.prototype, {
   supports: {
     naturalWidth: (function() {
       return "naturalWidth" in new Image();
-    })()
+    })(),
   },
 
   // NOTE: setTimeouts allow callbacks to be attached
@@ -23,7 +23,7 @@ $.extend(ImageReady.prototype, {
     this.options = $.extend(
       {
         method: "naturalWidth",
-        pollFallbackAfter: 1000
+        pollFallbackAfter: 1000,
       },
       arguments[3] || {}
     );
@@ -31,20 +31,20 @@ $.extend(ImageReady.prototype, {
     // a fallback is used when we're not polling for naturalWidth/Height
     // IE6-7 also use this to add support for naturalWidth/Height
     if (!this.supports.naturalWidth || this.options.method === "onload") {
-      setTimeout($.proxy(this.fallback, this));
+      setTimeout(this.fallback.bind(this));
       return;
     }
 
     // can exit out right away if we have a naturalWidth
-    if (this.img.complete && $.type(this.img.naturalWidth) !== "undefined") {
+    if (this.img.complete && typeof this.img.naturalWidth !== "undefined") {
       setTimeout(
-        $.proxy(function() {
+        function() {
           if (this.img.naturalWidth > 0) {
             this.success();
           } else {
             this.error();
           }
-        }, this)
+        }.bind(this)
       );
       return;
     }
@@ -52,20 +52,20 @@ $.extend(ImageReady.prototype, {
     // we instantly bind to onerror so we catch right away
     $(this.img).bind(
       "error",
-      $.proxy(function() {
+      function() {
         setTimeout(
-          $.proxy(function() {
+          function() {
             this.error();
-          }, this)
+          }.bind(this)
         );
-      }, this)
+      }.bind(this)
     );
 
     this.intervals = [
       [1000, 10],
       [2 * 1000, 50],
       [4 * 1000, 100],
-      [20 * 1000, 500]
+      [20 * 1000, 500],
     ];
 
     // for testing, 2sec delay
@@ -81,7 +81,7 @@ $.extend(ImageReady.prototype, {
 
   poll: function() {
     this._polling = setTimeout(
-      $.proxy(function() {
+      function() {
         if (this.img.naturalWidth > 0) {
           this.success();
           return;
@@ -116,7 +116,7 @@ $.extend(ImageReady.prototype, {
         }
 
         this.poll();
-      }, this),
+      }.bind(this),
       this._delay
     );
   },
@@ -125,7 +125,7 @@ $.extend(ImageReady.prototype, {
     var img = new Image();
     this._fallbackImg = img;
 
-    img.onload = $.proxy(function() {
+    img.onload = function() {
       img.onload = function() {};
 
       if (!this.supports.naturalWidth) {
@@ -134,9 +134,9 @@ $.extend(ImageReady.prototype, {
       }
 
       this.success();
-    }, this);
+    }.bind(this);
 
-    img.onerror = $.proxy(this.error, this);
+    img.onerror = this.error.bind(this);
 
     img.src = this.img.src;
   },
@@ -166,5 +166,5 @@ $.extend(ImageReady.prototype, {
 
     this.abort();
     if (this.errorCallback) this.errorCallback(this);
-  }
+  },
 });

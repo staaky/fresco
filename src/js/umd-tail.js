@@ -1,5 +1,5 @@
   // start
-  $(document).ready(function(event) {
+  $(function() {
     _Fresco.initialize();
   });
 

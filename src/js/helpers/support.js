@@ -37,7 +37,7 @@ var Support = (function() {
     css: {
       animation: testAllProperties("animation"),
       transform: testAllProperties("transform"),
-      prefixed: prefixed
+      prefixed: prefixed,
     },
 
     svg:
@@ -54,7 +54,7 @@ var Support = (function() {
       } catch (e) {
         return false;
       }
-    })()
+    })(),
   };
 })();
 

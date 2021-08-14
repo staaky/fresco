@@ -34,10 +34,10 @@ var VimeoThumbnail = (function() {
           "//vimeo.com/" +
           video_id +
           "&callback=?",
-        $.proxy(function(_data) {
+        function(_data) {
           if (_data && _data.thumbnail_url) {
             var data = {
-              url: _data.thumbnail_url
+              url: _data.thumbnail_url,
             };
 
             Cache.set(this.url, data);
@@ -46,7 +46,7 @@ var VimeoThumbnail = (function() {
           } else {
             this.errorCallback();
           }
-        }, this)
+        }.bind(this)
       );
     },
 
@@ -55,7 +55,7 @@ var VimeoThumbnail = (function() {
         this._xhr.abort();
         this._xhr = null;
       }
-    }
+    },
   });
 
   var Cache = {
@@ -80,7 +80,7 @@ var VimeoThumbnail = (function() {
           delete this.cache[i];
         }
       }
-    }
+    },
   };
 
   return VimeoThumbnail;

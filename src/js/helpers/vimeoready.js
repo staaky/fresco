@@ -35,18 +35,18 @@ var VimeoReady = (function() {
           "//vimeo.com/" +
           video_id +
           "&maxwidth=9999999&maxheight=9999999&callback=?",
-        $.proxy(function(_data) {
+        function(_data) {
           var data = {
             dimensions: {
               width: _data.width,
-              height: _data.height
-            }
+              height: _data.height,
+            },
           };
 
           Cache.set(this.url, data);
 
           if (this.callback) this.callback(data);
-        }, this)
+        }.bind(this)
       );
     },
 
@@ -55,7 +55,7 @@ var VimeoReady = (function() {
         this._xhr.abort();
         this._xhr = null;
       }
-    }
+    },
   });
 
   var Cache = {
@@ -80,7 +80,7 @@ var VimeoReady = (function() {
           delete this.cache[i];
         }
       }
-    }
+    },
   };
 
   return VimeoReady;

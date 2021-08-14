@@ -231,11 +231,11 @@ var Page = (function() {
       // overlap (this affects padding)
       $.each(
         ["x", "y"],
-        $.proxy(function(i, z) {
+        function(i, z) {
           if (this.view.options.overflow[z]) {
             this.element.addClass("fr-overflow-" + z);
           }
-        }, this)
+        }.bind(this)
       );
 
       // add the type
@@ -282,9 +282,9 @@ var Page = (function() {
 
       $.each(
         pages,
-        $.proxy(function(i, page) {
+        function(i, page) {
           page.preload();
-        }, this)
+        }.bind(this)
       );
     },
 
@@ -308,7 +308,7 @@ var Page = (function() {
 
       this.preloadReady = new ImageReady(
         this.image[0],
-        $.proxy(function(imageReady) {
+        function(imageReady) {
           // mark this page as loaded, without hiding the spinner
           this.loaded = true;
           _loadedUrlCache[this.view.url] = true;
@@ -318,14 +318,14 @@ var Page = (function() {
 
           this.dimensions = {
             width: imageReady.img.naturalWidth,
-            height: imageReady.img.naturalHeight
+            height: imageReady.img.naturalHeight,
           };
-        }, this),
+        }.bind(this),
         null,
         {
           // have the preload always use naturalWidth,
           // this avoid an extra new Image() request
-          method: "naturalWidth"
+          method: "naturalWidth",
         }
       );
     },
@@ -351,9 +351,9 @@ var Page = (function() {
       if (this.view.options.spinner) {
         // && !_loadedUrlCache[this.view.url]
         this._spinnerDelay = setTimeout(
-          $.proxy(function() {
+          function() {
             Spinner.show();
-          }, this),
+          }.bind(this),
           this.view.options.spinnerDelay || 0
         );
       }
@@ -368,18 +368,18 @@ var Page = (function() {
 
           this.imageReady = new ImageReady(
             this.image[0],
-            $.proxy(function(imageReady) {
+            function(imageReady) {
               // mark as loaded
               this._markAsLoaded();
 
               this.setDimensions({
                 width: imageReady.img.naturalWidth,
-                height: imageReady.img.naturalHeight
+                height: imageReady.img.naturalHeight,
               });
 
               if (callback) callback();
-            }, this),
-            $.proxy(function() {
+            }.bind(this),
+            function() {
               // mark as loaded
               this._markAsLoaded();
 
@@ -393,16 +393,16 @@ var Page = (function() {
 
               this.setDimensions({
                 width: this.error.outerWidth(),
-                height: this.error.outerHeight()
+                height: this.error.outerHeight(),
               });
 
               // allow resizing
               this.error.css({ width: "100%", height: "100%" });
 
               if (callback) callback();
-            }, this),
+            }.bind(this),
             {
-              method: this.view.options.loadedMethod
+              method: this.view.options.loadedMethod,
             }
           );
 
@@ -411,17 +411,17 @@ var Page = (function() {
         case "vimeo":
           this.vimeoReady = new VimeoReady(
             this.view.url,
-            $.proxy(function(data) {
+            function(data) {
               // mark as loaded
               this._markAsLoaded();
 
               this.setDimensions({
                 width: data.dimensions.width,
-                height: data.dimensions.height
+                height: data.dimensions.height,
               });
 
               if (callback) callback();
-            }, this)
+            }.bind(this)
           );
           break;
 
@@ -431,7 +431,7 @@ var Page = (function() {
 
           this.setDimensions({
             width: this.view.options.width,
-            height: this.view.options.height
+            height: this.view.options.height,
           });
 
           if (callback) callback();
@@ -447,7 +447,7 @@ var Page = (function() {
         var opts = this.view.options,
           bounds = {
             width: opts.maxWidth ? opts.maxWidth : this.dimensions.width,
-            height: opts.maxHeight ? opts.maxHeight : this.dimensions.height
+            height: opts.maxHeight ? opts.maxHeight : this.dimensions.height,
           };
 
         this.dimensions = Fit.within(bounds, this.dimensions);
@@ -489,7 +489,7 @@ var Page = (function() {
         queryString = $.param(playerVars),
         urls = {
           vimeo: protocol + "//player.vimeo.com/video/{id}?{queryString}",
-          youtube: protocol + "//www.youtube.com/embed/{id}?{queryString}"
+          youtube: protocol + "//www.youtube.com/embed/{id}?{queryString}",
         },
         src = urls[this.view.type]
           .replace("{id}", this.view._data.id)
@@ -504,7 +504,7 @@ var Page = (function() {
             src: src,
             height: this._contentDimensions.height,
             width: this._contentDimensions.width,
-            frameborder: 0
+            frameborder: 0,
           }))
       );
 
@@ -527,7 +527,7 @@ var Page = (function() {
       shq.queue([]); // clear queue
 
       shq.queue(
-        $.proxy(function(next_stopped_inactive) {
+        function(next_stopped_inactive) {
           // hide the spinner only if it's visible, and when this page doesn't need loading
           var needsLoading =
             this.view.options.spinner && !_loadedUrlCache[this.view.url];
@@ -537,44 +537,44 @@ var Page = (function() {
 
           Pages.stopInactive();
           next_stopped_inactive();
-        }, this)
+        }.bind(this)
       );
 
       // update the mode is something we can do instantly
       shq.queue(
-        $.proxy(function(next_updated_UI) {
+        function(next_updated_UI) {
           this.updateUI(); // first this page
           UI.set(this._ui); // then the window to match
           next_updated_UI();
-        }, this)
+        }.bind(this)
       );
 
       // keyboard, enabled here so escape can be pressed on load
       shq.queue(
-        $.proxy(function(next_keyboard) {
+        function(next_keyboard) {
           Keyboard.enable(this.view.options.keyboard);
           next_keyboard();
-        }, this)
+        }.bind(this)
       );
 
       // load
       shq.queue(
-        $.proxy(function(next_loaded) {
+        function(next_loaded) {
           // skin spinner
           Spinner.setSkin(this.view.options.skin);
 
           // load
           this.load(
-            $.proxy(function() {
+            function() {
               this.preloadSurroundingImages();
               next_loaded();
-            }, this)
+            }.bind(this)
           );
-        }, this)
+        }.bind(this)
       );
 
       shq.queue(
-        $.proxy(function(next_utility) {
+        function(next_utility) {
           this.raise();
 
           Window.setSkin(this.view.options.skin);
@@ -586,33 +586,31 @@ var Page = (function() {
           Window.adjustToScroll();
 
           next_utility();
-        }, this)
+        }.bind(this)
       );
 
       // vimeo and youtube use this for insertion
       if (this.isVideo()) {
         shq.queue(
-          $.proxy(function(next_video_inserted) {
-            this.insertVideo(
-              $.proxy(function() {
-                next_video_inserted();
-              })
-            );
-          }, this)
+          function(next_video_inserted) {
+            this.insertVideo(function() {
+              next_video_inserted();
+            });
+          }.bind(this)
         );
       }
 
       // if we're not syncing, hide other visible pages before this one
       if (!this.view.options.sync) {
         shq.queue(
-          $.proxy(function(next_synced) {
+          function(next_synced) {
             Pages.hideInactive(next_synced);
-          }, this)
+          }.bind(this)
         );
       }
 
       shq.queue(
-        $.proxy(function(next_shown) {
+        function(next_shown) {
           var fx = 3,
             duration = this.view.options.effects.content.show;
 
@@ -624,7 +622,7 @@ var Page = (function() {
           if (!Window.visible) {
             duration = this.view.options.effects.window.show;
 
-            if ($.type(this.view.options.onShow) === "function") {
+            if (typeof this.view.options.onShow === "function") {
               this.view.options.onShow.call(Fresco);
             }
           }
@@ -666,27 +664,27 @@ var Page = (function() {
           // call afterPosition right after starting the _show() but within
           // this queue step so triggers before the animation completes
           var afterPosition = this.view.options.afterPosition;
-          if ($.type(afterPosition) === "function") {
+          if (typeof afterPosition === "function") {
             afterPosition.call(Fresco, this._position);
           }
-        }, this)
+        }.bind(this)
       );
 
       shq.queue(
-        $.proxy(function(next_set_visible) {
+        function(next_set_visible) {
           this._visible = true;
 
           if (callback) callback();
 
           next_set_visible();
-        }, this)
+        }.bind(this)
       );
     },
 
     _show: function(callback, alternateDuration) {
       var duration = !Window.visible
         ? 0
-        : $.type(alternateDuration) === "number"
+        : typeof alternateDuration === "number"
         ? alternateDuration
         : this.view.options.effects.content.show;
 
@@ -708,7 +706,7 @@ var Page = (function() {
       this.abort();
 
       var duration =
-        $.type(alternateDuration) === "number"
+        typeof alternateDuration === "number"
           ? alternateDuration
           : this.view.options.effects.content.hide;
 
@@ -724,12 +722,12 @@ var Page = (function() {
           duration,
           0,
           "frescoEaseInCubic",
-          $.proxy(function() {
+          function() {
             this.element.hide();
             this._visible = false;
             Pages.removeTracking(this._position);
             if (callback) callback();
-          }, this)
+          }.bind(this)
         );
     },
 
@@ -920,7 +918,7 @@ var Page = (function() {
 
       var padding = {
         left: parseInt(container.css("padding-left")),
-        top: parseInt(container.css("padding-top"))
+        top: parseInt(container.css("padding-top")),
       };
 
       // if the ui is outside and we're showing a position, it might be larger then left padding
@@ -929,11 +927,11 @@ var Page = (function() {
         var positionWidth = 0;
 
         this._whileVisible(
-          $.proxy(function() {
+          function() {
             if (this._positionOutside.is(":visible")) {
               positionWidth = this._positionOutside.outerWidth(true);
             }
-          }, this)
+          }.bind(this)
         );
 
         if (positionWidth > padding.left) {
@@ -946,7 +944,7 @@ var Page = (function() {
 
       var fitOptions = {
         width: true,
-        height: this._noOverflow ? true : !this.view.options.overflow.y
+        height: this._noOverflow ? true : !this.view.options.overflow.y,
       };
 
       var fitted = Fit.within(bounds, dimensions, fitOptions),
@@ -974,7 +972,7 @@ var Page = (function() {
             extraShowElements = this.caption;
 
             this._whileVisible(
-              $.proxy(function() {
+              function() {
                 var count = 0,
                   attempts = 2;
 
@@ -989,7 +987,7 @@ var Page = (function() {
                         height: Math.max(
                           contentDimensions.height - (infoHeight - spaceBottom),
                           0
-                        ) // prevents NaN
+                        ), // prevents NaN
                       },
                       contentDimensions,
                       fitOptions
@@ -1003,8 +1001,6 @@ var Page = (function() {
                 infoHeight = this._getInfoHeight(contentDimensions.width);
                 var infoShowLimit = 0.5; //this.view.options.infoShowLimit;
 
-                // console.log(infoHeight, contentDimensions.height, bounds.height);
-                // console.log(infoHeight + contentDimensions.height, '>', bounds.height);
                 if (
                   // too much overflow after resizing the info box to the content area
                   (!this.view.options.overflow.y &&
@@ -1014,35 +1010,26 @@ var Page = (function() {
                   // info height is >= 50% of image height
                   (infoShowLimit &&
                     infoHeight >= infoShowLimit * contentDimensions.height)
-                  //|| (infoHide && infoHide.width
-                  //  && infoHeight >= infoHide.width * contentDimensions.width) // info height is >= 60% of image width
                 ) {
                   // info is almost a square compared to the image width
-                  // console.log('hiding caption', infoHeight, infoShowLimit * contentDimensions.height,
-                  // (!this.view.options.overflow.y && (infoHeight + contentDimensions.height > bounds.height)));
-                  // console.log(infoHeight, contentDimensions.height, bounds.height);
-
-                  // console.log((!this.view.options.overflow.y && (infoHeight + contentDimensions.height > bounds.height)));
-                  // console.log(infoHeight, contentDimensions.height, bounds.height);
-                  // console.log('disabling caption, okay');
                   infoCaption = false;
                   infoHeight = 0;
                   contentDimensions = preScale;
                 }
-              }, this),
+              }.bind(this),
               extraShowElements
             );
           } // end caption
 
           if (info) {
             info.css({
-              width: contentDimensions.width + "px"
+              width: contentDimensions.width + "px",
             });
           }
 
           backgroundDimensions = {
             width: contentDimensions.width,
-            height: contentDimensions.height + infoHeight
+            height: contentDimensions.height + infoHeight,
           };
 
           break;
@@ -1053,7 +1040,7 @@ var Page = (function() {
             extraShowElements = caption;
 
             this._whileVisible(
-              $.proxy(function() {
+              function() {
                 infoHeight = this._getInfoHeight(contentDimensions.width);
                 var infoShowLimit = 0.45;
 
@@ -1065,7 +1052,7 @@ var Page = (function() {
                   infoCaption = false;
                   infoHeight = 0;
                 }
-              }, this),
+              }.bind(this),
               extraShowElements
             );
           }
@@ -1082,7 +1069,7 @@ var Page = (function() {
           }
 
           this._whileVisible(
-            $.proxy(function() {
+            function() {
               // make the caption 100% width
               if (caption || pos) {
                 info.css({ width: "100%" });
@@ -1110,14 +1097,14 @@ var Page = (function() {
               contentDimensions = Fit.within(
                 {
                   width: bounds.width,
-                  height: Math.max(0, bounds.height - infoHeight)
+                  height: Math.max(0, bounds.height - infoHeight),
                 },
                 contentDimensions,
                 fitOptions
               );
 
               backgroundDimensions = contentDimensions;
-            }, this),
+            }.bind(this),
             extraElements
           );
 
@@ -1158,7 +1145,7 @@ var Page = (function() {
           backgroundDimensions.height +
           (this._ui === "fullclick" ? infoHeight : 0) -
           Window._boxDimensions.height,
-        x: 0
+        x: 0,
       };
 
       this._track =
@@ -1188,11 +1175,11 @@ var Page = (function() {
           Window._boxDimensions.height * 0.5 -
           backgroundDimensions.height * 0.5,
         left:
-          Window._boxDimensions.width * 0.5 - backgroundDimensions.width * 0.5
+          Window._boxDimensions.width * 0.5 - backgroundDimensions.width * 0.5,
       };
       var infoPosition = {
         top: contentPosition.top + contentDimensions.height,
-        left: contentPosition.left
+        left: contentPosition.left,
       };
       var containerBottom = 0;
 
@@ -1207,7 +1194,7 @@ var Page = (function() {
           infoPosition = {
             top: Window._boxDimensions.height - this._infoHeight,
             left: 0,
-            bottom: "auto"
+            bottom: "auto",
           };
 
           containerBottom = this._infoHeight;
@@ -1218,7 +1205,7 @@ var Page = (function() {
           infoPosition = {
             top: "auto",
             left: 0,
-            bottom: 0
+            bottom: 0,
           };
 
           break;
@@ -1248,7 +1235,7 @@ var Page = (function() {
 
             // close X
             this.closeInside.css({
-              top: top
+              top: top,
             });
 
             if (this._total > 1) {
@@ -1267,7 +1254,7 @@ var Page = (function() {
                 center = this.overlap.y * 0.5;
 
               buttons.css({
-                "margin-top": pnMarginTop + (top - center)
+                "margin-top": pnMarginTop + (top - center),
               });
 
               // position inside
@@ -1291,7 +1278,7 @@ var Page = (function() {
       this.container.css({ bottom: containerBottom });
       this.content.css(contentPosition);
       this.background.css(contentPosition);
-    }
+    },
   });
 
   return Page;

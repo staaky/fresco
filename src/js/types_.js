@@ -27,9 +27,9 @@ var Types = {
       if (!this.detect()) return false;
 
       return {
-        extension: detectExtension(url)
+        extension: detectExtension(url),
       };
-    }
+    },
   },
 
   youtube: {
@@ -51,9 +51,9 @@ var Types = {
       if (!id) return false;
 
       return {
-        id: id
+        id: id,
       };
-    }
+    },
   },
 
   vimeo: {
@@ -68,8 +68,8 @@ var Types = {
       if (!id) return false;
 
       return {
-        id: id
+        id: id,
       };
-    }
-  }
+    },
+  },
 };

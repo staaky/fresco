@@ -15,9 +15,9 @@ var Spinner = {
 
     this.element.on(
       "click",
-      $.proxy(function() {
+      function() {
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     // prevent mousewheel scroll
@@ -47,7 +47,7 @@ var Spinner = {
 
     this._dimensions = {
       width: this.element.outerWidth(),
-      height: this.element.outerHeight()
+      height: this.element.outerHeight(),
     };
 
     if (!attached) this.detach();
@@ -74,7 +74,7 @@ var Spinner = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.spinner.show) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
@@ -87,16 +87,16 @@ var Spinner = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.spinner.hide) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
     this.element.stop(true).fadeOut(
       duration || 0,
-      $.proxy(function() {
+      function() {
         this.detach();
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -126,7 +126,7 @@ var Spinner = {
       left:
         Window._boxPosition.left +
         Window._boxDimensions.width * 0.5 -
-        this._dimensions.width * 0.5
+        this._dimensions.width * 0.5,
     });
-  }
+  },
 };

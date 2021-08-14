@@ -12,7 +12,7 @@ var Overlay = {
 
     this.element.on(
       "click",
-      $.proxy(function() {
+      function() {
         var page = Pages.page;
         if (
           page &&
@@ -23,7 +23,7 @@ var Overlay = {
           return;
         }
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     if (Support.mobileTouch) {
@@ -67,7 +67,7 @@ var Overlay = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.window.show) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
@@ -83,17 +83,17 @@ var Overlay = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.window.hide) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
     this.element.stop(true).fadeOut(
       duration || 0,
-      $.proxy(function() {
+      function() {
         this.detach();
         this.visible = false;
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -127,8 +127,8 @@ var Overlay = {
 
     if (Support.mobileTouch && !scrollDimensions) {
       this.element.css({
-        height: this.getScrollDimensions().height
+        height: this.getScrollDimensions().height,
       });
     }
-  }
+  },
 };

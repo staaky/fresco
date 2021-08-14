@@ -30,5 +30,5 @@ $.extend(Timers.prototype, {
       clearTimeout(timer);
     });
     this._timers = {};
-  }
+  },
 });

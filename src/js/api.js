@@ -18,11 +18,11 @@ var _Fresco = {
       .on(
         "click",
         ".fresco[href]",
-        (this._delegateHandler = $.proxy(this.delegate, this))
+        (this._delegateHandler = this.delegate.bind(this))
       )
       // observe document clicks for XY setting, this makes sure that
       // positioning is correct when opening overflow with the API
-      .on("click", (this._setClickXYHandler = $.proxy(this.setClickXY, this)));
+      .on("click", (this._setClickXYHandler = this.setClickXY.bind(this)));
   },
 
   stopDelegating: function() {
@@ -39,7 +39,7 @@ var _Fresco = {
   setClickXY: function(event) {
     Pages.setXY({
       x: event.pageX,
-      y: event.pageY
+      y: event.pageY,
     });
   },
 
@@ -65,7 +65,7 @@ var _Fresco = {
     var options = arguments[1] || {},
       position = arguments[2];
 
-    if (arguments[1] && $.type(arguments[1]) === "number") {
+    if (arguments[1] && typeof arguments[1] === "number") {
       position = arguments[1];
       options = {};
     }
@@ -74,7 +74,7 @@ var _Fresco = {
       object_type,
       isElement = _.isElement(object);
 
-    switch ((object_type = $.type(object))) {
+    switch ((object_type = typeof object)) {
       case "string":
       case "object":
         var view = new View(object, options),
@@ -172,7 +172,7 @@ var _Fresco = {
   showFallback: (function() {
     function getUrl(object) {
       var url,
-        type = $.type(object);
+        type = typeof object;
 
       if (type === "string") {
         url = object;
@@ -194,7 +194,7 @@ var _Fresco = {
       var url = getUrl(object);
       if (url) window.location.href = url;
     };
-  })()
+  })(),
 };
 
 $.extend(Fresco, {
@@ -228,7 +228,7 @@ $.extend(Fresco, {
   setDefaultSkin: function(skin) {
     Options.defaults.skin = skin;
     return this;
-  }
+  },
 });
 
 // fallback for old browsers without full position:fixed support
@@ -238,10 +238,10 @@ if (
   // old Android
   // added a version check because Firefox on Android doesn't have a
   // version number above 4.2 anymore
-  ($.type(Browser.Android) === "number" && Browser.Android < 3) ||
+  (typeof Browser.Android === "number" && Browser.Android < 3) ||
   // old WebKit
   (Browser.MobileSafari &&
-    ($.type(Browser.WebKit) === "number" && Browser.WebKit < 533.18))
+    (typeof Browser.WebKit === "number" && Browser.WebKit < 533.18))
 ) {
   // we'll reset the show function
   _Fresco.show = _Fresco.showFallback;

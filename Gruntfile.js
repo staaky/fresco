@@ -2,7 +2,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     dirs: {
-      dest: "dist"
+      dest: "dist",
     },
 
     vars: {},
@@ -45,10 +45,10 @@ module.exports = function(grunt) {
           "src/js/ui-inside.js",
           "src/js/ui-outside.js",
 
-          "src/js/umd-tail.js"
+          "src/js/umd-tail.js",
         ],
-        dest: "<%= dirs.dest %>/js/fresco.js"
-      }
+        dest: "<%= dirs.dest %>/js/fresco.js",
+      },
     },
 
     copy: {
@@ -58,26 +58,26 @@ module.exports = function(grunt) {
             expand: true,
             cwd: "src/css/",
             src: ["**"],
-            dest: "<%= dirs.dest %>/css/"
-          }
-        ]
-      }
+            dest: "<%= dirs.dest %>/css/",
+          },
+        ],
+      },
     },
 
     uglify: {
       dist: {
         options: {
           output: {
-            comments: "some"
-          }
+            comments: "some",
+          },
         },
         src: ["<%= dirs.dest %>/js/fresco.js"],
-        dest: "<%= dirs.dest %>/js/fresco.min.js"
-      }
+        dest: "<%= dirs.dest %>/js/fresco.min.js",
+      },
     },
 
     clean: {
-      dist: "dist/"
+      dist: "dist/",
     },
 
     watch: {
@@ -85,10 +85,10 @@ module.exports = function(grunt) {
         files: ["src/**/*.js", "src/**/*.css"],
         tasks: ["default"],
         options: {
-          spawn: false
-        }
-      }
-    }
+          spawn: false,
+        },
+      },
+    },
   });
 
   // Load plugins
@@ -102,6 +102,6 @@ module.exports = function(grunt) {
     "clean:dist",
     "concat:dist",
     "copy:dist",
-    "uglify:dist"
+    "uglify:dist",
   ]);
 };

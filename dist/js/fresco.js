@@ -1,8 +1,8 @@
 /**
- * Fresco - A Beautiful Responsive Lightbox - v2.3.0
- * (c) 2012-2019 Nick Stakenburg
+ * Fresco - A Beautiful Responsive Lightbox - v2.3.2
+ * (c) 2012-2021 Nick Stakenburg
  *
- * https://www.frescojs.com
+ * https://github.com/staaky/fresco
  *
  * @license: https://creativecommons.org/licenses/by/4.0
  */
@@ -25,18 +25,18 @@
 var Fresco = {};
 
 $.extend(Fresco, {
-  version: "2.3.0"
+  version: "2.3.2",
 });
 
 Fresco.Skins = {
   // the default skin
-  fresco: {}
+  fresco: {},
 };
 
 var Bounds = {
   viewport: function() {
     var dimensions = {
-      width: $(window).width()
+      width: $(window).width(),
     };
 
     // Mobile Safari has a bugged viewport height after scrolling
@@ -50,7 +50,7 @@ var Bounds = {
     }
 
     return dimensions;
-  }
+  },
 };
 
 var Browser = (function(uA) {
@@ -76,7 +76,7 @@ var Browser = (function(uA) {
     Chrome: uA.indexOf("Chrome") > -1 && getVersion("Chrome/"),
     ChromeMobile: uA.indexOf("CrMo") > -1 && getVersion("CrMo/"),
     Android: uA.indexOf("Android") > -1 && getVersion("Android "),
-    IEMobile: uA.indexOf("IEMobile") > -1 && getVersion("IEMobile/")
+    IEMobile: uA.indexOf("IEMobile") > -1 && getVersion("IEMobile/"),
   };
 })(navigator.userAgent);
 
@@ -98,8 +98,8 @@ var _ = {
     capitalize: function(string) {
       string = baseToString(string);
       return string && string.charAt(0).toUpperCase() + string.slice(1);
-    }
-  }
+    },
+  },
 };
 
 //mousewheel
@@ -137,7 +137,7 @@ var Fit = {
     var options = $.extend(
       {
         height: true,
-        width: true
+        width: true,
       },
       arguments[2] || {}
     );
@@ -173,7 +173,7 @@ var Fit = {
       // adjust current size, based on original dimensions
       size = {
         width: dimensions.width * scale,
-        height: dimensions.height * scale
+        height: dimensions.height * scale,
       };
       //}
 
@@ -185,7 +185,7 @@ var Fit = {
     size.height = Math.max(size.height, 0);
 
     return size;
-  }
+  },
 };
 
 // we only uses some of the jQueryUI easing functions
@@ -201,7 +201,7 @@ $.extend($.easing, {
 
   frescoEaseOutSine: function(x, t, b, c, d) {
     return c * Math.sin((t / d) * (Math.PI / 2)) + b;
-  }
+  },
 });
 
 var Support = (function() {
@@ -243,7 +243,7 @@ var Support = (function() {
     css: {
       animation: testAllProperties("animation"),
       transform: testAllProperties("transform"),
-      prefixed: prefixed
+      prefixed: prefixed,
     },
 
     svg:
@@ -260,7 +260,7 @@ var Support = (function() {
       } catch (e) {
         return false;
       }
-    })()
+    })(),
   };
 })();
 
@@ -289,7 +289,7 @@ $.extend(ImageReady.prototype, {
   supports: {
     naturalWidth: (function() {
       return "naturalWidth" in new Image();
-    })()
+    })(),
   },
 
   // NOTE: setTimeouts allow callbacks to be attached
@@ -302,7 +302,7 @@ $.extend(ImageReady.prototype, {
     this.options = $.extend(
       {
         method: "naturalWidth",
-        pollFallbackAfter: 1000
+        pollFallbackAfter: 1000,
       },
       arguments[3] || {}
     );
@@ -310,20 +310,20 @@ $.extend(ImageReady.prototype, {
     // a fallback is used when we're not polling for naturalWidth/Height
     // IE6-7 also use this to add support for naturalWidth/Height
     if (!this.supports.naturalWidth || this.options.method === "onload") {
-      setTimeout($.proxy(this.fallback, this));
+      setTimeout(this.fallback.bind(this));
       return;
     }
 
     // can exit out right away if we have a naturalWidth
-    if (this.img.complete && $.type(this.img.naturalWidth) !== "undefined") {
+    if (this.img.complete && typeof this.img.naturalWidth !== "undefined") {
       setTimeout(
-        $.proxy(function() {
+        function() {
           if (this.img.naturalWidth > 0) {
             this.success();
           } else {
             this.error();
           }
-        }, this)
+        }.bind(this)
       );
       return;
     }
@@ -331,20 +331,20 @@ $.extend(ImageReady.prototype, {
     // we instantly bind to onerror so we catch right away
     $(this.img).bind(
       "error",
-      $.proxy(function() {
+      function() {
         setTimeout(
-          $.proxy(function() {
+          function() {
             this.error();
-          }, this)
+          }.bind(this)
         );
-      }, this)
+      }.bind(this)
     );
 
     this.intervals = [
       [1000, 10],
       [2 * 1000, 50],
       [4 * 1000, 100],
-      [20 * 1000, 500]
+      [20 * 1000, 500],
     ];
 
     // for testing, 2sec delay
@@ -360,7 +360,7 @@ $.extend(ImageReady.prototype, {
 
   poll: function() {
     this._polling = setTimeout(
-      $.proxy(function() {
+      function() {
         if (this.img.naturalWidth > 0) {
           this.success();
           return;
@@ -395,7 +395,7 @@ $.extend(ImageReady.prototype, {
         }
 
         this.poll();
-      }, this),
+      }.bind(this),
       this._delay
     );
   },
@@ -404,7 +404,7 @@ $.extend(ImageReady.prototype, {
     var img = new Image();
     this._fallbackImg = img;
 
-    img.onload = $.proxy(function() {
+    img.onload = function() {
       img.onload = function() {};
 
       if (!this.supports.naturalWidth) {
@@ -413,9 +413,9 @@ $.extend(ImageReady.prototype, {
       }
 
       this.success();
-    }, this);
+    }.bind(this);
 
-    img.onerror = $.proxy(this.error, this);
+    img.onerror = this.error.bind(this);
 
     img.src = this.img.src;
   },
@@ -445,7 +445,7 @@ $.extend(ImageReady.prototype, {
 
     this.abort();
     if (this.errorCallback) this.errorCallback(this);
-  }
+  },
 });
 
 function Timers() {
@@ -480,7 +480,7 @@ $.extend(Timers.prototype, {
       clearTimeout(timer);
     });
     this._timers = {};
-  }
+  },
 });
 
 // uses Types to scan a URI for info
@@ -506,7 +506,7 @@ function detectExtension(url) {
 var Type = {
   isVideo: function(type) {
     return /^(youtube|vimeo)$/.test(type);
-  }
+  },
 };
 
 var Types = {
@@ -519,9 +519,9 @@ var Types = {
       if (!this.detect()) return false;
 
       return {
-        extension: detectExtension(url)
+        extension: detectExtension(url),
       };
-    }
+    },
   },
 
   vimeo: {
@@ -536,9 +536,9 @@ var Types = {
       if (!id) return false;
 
       return {
-        id: id
+        id: id,
       };
-    }
+    },
   },
 
   youtube: {
@@ -560,10 +560,10 @@ var Types = {
       if (!id) return false;
 
       return {
-        id: id
+        id: id,
       };
-    }
-  }
+    },
+  },
 };
 
 var VimeoThumbnail = (function() {
@@ -602,10 +602,10 @@ var VimeoThumbnail = (function() {
           "//vimeo.com/" +
           video_id +
           "&callback=?",
-        $.proxy(function(_data) {
+        function(_data) {
           if (_data && _data.thumbnail_url) {
             var data = {
-              url: _data.thumbnail_url
+              url: _data.thumbnail_url,
             };
 
             Cache.set(this.url, data);
@@ -614,7 +614,7 @@ var VimeoThumbnail = (function() {
           } else {
             this.errorCallback();
           }
-        }, this)
+        }.bind(this)
       );
     },
 
@@ -623,7 +623,7 @@ var VimeoThumbnail = (function() {
         this._xhr.abort();
         this._xhr = null;
       }
-    }
+    },
   });
 
   var Cache = {
@@ -648,7 +648,7 @@ var VimeoThumbnail = (function() {
           delete this.cache[i];
         }
       }
-    }
+    },
   };
 
   return VimeoThumbnail;
@@ -691,18 +691,18 @@ var VimeoReady = (function() {
           "//vimeo.com/" +
           video_id +
           "&maxwidth=9999999&maxheight=9999999&callback=?",
-        $.proxy(function(_data) {
+        function(_data) {
           var data = {
             dimensions: {
               width: _data.width,
-              height: _data.height
-            }
+              height: _data.height,
+            },
           };
 
           Cache.set(this.url, data);
 
           if (this.callback) this.callback(data);
-        }, this)
+        }.bind(this)
       );
     },
 
@@ -711,7 +711,7 @@ var VimeoReady = (function() {
         this._xhr.abort();
         this._xhr = null;
       }
-    }
+    },
   });
 
   var Cache = {
@@ -736,7 +736,7 @@ var VimeoReady = (function() {
           delete this.cache[i];
         }
       }
-    }
+    },
   };
 
   return VimeoReady;
@@ -749,19 +749,19 @@ var Options = {
       spinner: { show: 150, hide: 150 },
       window: { show: 440, hide: 300 },
       thumbnail: { show: 300, delay: 150 },
-      thumbnails: { slide: 0 }
+      thumbnails: { slide: 0 },
     },
     keyboard: {
       left: true,
       right: true,
-      esc: true
+      esc: true,
     },
     loadedMethod: "naturalWidth",
     loop: false,
     onClick: "previous-next",
     overflow: false,
     overlay: {
-      close: true
+      close: true,
     },
     preload: [1, 2],
     position: true,
@@ -778,7 +778,7 @@ var Options = {
       title: 1,
       byline: 1,
       portrait: 0,
-      loop: 0
+      loop: 0,
     },
     youtube: {
       autoplay: 1,
@@ -790,22 +790,22 @@ var Options = {
       loop: 0,
       modestbranding: 1,
       rel: 0,
-      vq: "hd1080" // force hd: http://stackoverflow.com/a/12467865
+      vq: "hd1080", // force hd: http://stackoverflow.com/a/12467865
     },
 
     initialTypeOptions: {
       image: {},
       vimeo: {
-        width: 1280
+        width: 1280,
       },
       // Youtube needs both dimensions, it doesn't support fetching video dimensions like Vimeo yet.
       // Star this ticket if you'd like to get support for it at some point:
       // https://code.google.com/p/gdata-issues/issues/detail?id=4329
       youtube: {
         width: 1280,
-        height: 720
-      }
-    }
+        height: 720,
+      },
+    },
   },
 
   create: function(opts, type, data) {
@@ -858,7 +858,7 @@ var Options = {
     // keyboard
     if (options.keyboard) {
       // when keyboard is true, enable all keys
-      if ($.type(options.keyboard) === "boolean") {
+      if (typeof options.keyboard === "boolean") {
         options.keyboard = {};
         $.each(this.defaults.keyboard, function(key, bool) {
           options.keyboard[key] = true;
@@ -877,7 +877,7 @@ var Options = {
       // false
       options.overflow = { x: false, y: false };
     } else {
-      if ($.type(options.overflow) === "boolean") {
+      if (typeof options.overflow === "boolean") {
         // true
         options.overflow = { x: false, y: true };
       }
@@ -907,7 +907,7 @@ var Options = {
     }
 
     // youtube thumbnails
-    if (!options.thumbnail && $.type(options.thumbnail) !== "boolean") {
+    if (!options.thumbnail && typeof options.thumbnail !== "boolean") {
       // only continue if undefined, forced false stays false
       var thumbnail = false;
 
@@ -932,7 +932,7 @@ var Options = {
     }
 
     return options;
-  }
+  },
 };
 
 var Overlay = {
@@ -949,7 +949,7 @@ var Overlay = {
 
     this.element.on(
       "click",
-      $.proxy(function() {
+      function() {
         var page = Pages.page;
         if (
           page &&
@@ -960,7 +960,7 @@ var Overlay = {
           return;
         }
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     if (Support.mobileTouch) {
@@ -1004,7 +1004,7 @@ var Overlay = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.window.show) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
@@ -1020,17 +1020,17 @@ var Overlay = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.window.hide) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
     this.element.stop(true).fadeOut(
       duration || 0,
-      $.proxy(function() {
+      function() {
         this.detach();
         this.visible = false;
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -1064,10 +1064,10 @@ var Overlay = {
 
     if (Support.mobileTouch && !scrollDimensions) {
       this.element.css({
-        height: this.getScrollDimensions().height
+        height: this.getScrollDimensions().height,
       });
     }
-  }
+  },
 };
 
 var Window = {
@@ -1171,7 +1171,7 @@ var Window = {
     if (this._onWindowResizeHandler) return;
     $(window).on(
       "resize orientationchange",
-      (this._onWindowResizeHandler = $.proxy(this._onWindowResize, this))
+      (this._onWindowResizeHandler = this._onWindowResize.bind(this))
     );
   },
 
@@ -1182,22 +1182,10 @@ var Window = {
     }
   },
 
-  /*startObservingScroll: function() {
-    if (this._onScrollHandler) return;
-    $(window).on('scroll', this._onScrollHandler = $.proxy(this._onScroll, this));
-  },
-
-  stopObservingScroll: function() {
-    if (this._onScrollHandler) {
-      $(window).off('scroll', this._onScrollHandler);
-      this._onScrollHandler = null;
-    }
-  },*/
-
   _onScroll: function() {
     if (!Support.mobileTouch) return;
     // the timeout is a hack for iOS not responding
-    this.timers.set("scroll", $.proxy(this.adjustToScroll, this), 0);
+    this.timers.set("scroll", this.adjustToScroll.bind(this), 0);
   },
 
   _onWindowResize: function() {
@@ -1231,8 +1219,7 @@ var Window = {
     if (!Support.mobileTouch) return;
 
     this.element.css({
-      //left: $(window).scrollLeft(),
-      top: $(window).scrollTop()
+      top: $(window).scrollTop(),
     });
   },
 
@@ -1253,13 +1240,13 @@ var Window = {
       width: isHorizontal ? viewport.width : viewport.width - thumbnails.width,
       height: isHorizontal
         ? viewport.height - thumbnails.height
-        : viewport.height
+        : viewport.height,
     };
 
     // resize
     this._boxPosition = {
       top: 0,
-      left: isHorizontal ? 0 : thumbnails.width
+      left: isHorizontal ? 0 : thumbnails.width,
     };
 
     this._box.css($.extend({}, this._boxDimensions, this._boxPosition));
@@ -1284,7 +1271,7 @@ var Window = {
     this.adjustToScroll();
 
     var duration =
-      ($.type(alternateDuration) === "number"
+      (typeof alternateDuration === "number"
         ? alternateDuration
         : Pages.page && Pages.page.view.options.effects.window.show) || 0;
 
@@ -1303,22 +1290,22 @@ var Window = {
     // because the fading happens on top of a solid area
     this.timers.set(
       "show-window",
-      $.proxy(function() {
+      function() {
         this._show(
-          $.proxy(function() {
+          function() {
             this.opening = false;
             if (callback && --fx < 1) callback();
-          }, this),
+          }.bind(this),
           duration
         );
-      }, this),
+      }.bind(this),
       duration > 1 ? Math.min(duration * 0.5, 50) : 1
     );
   },
 
   _show: function(callback, alternateDuration) {
     var duration =
-      ($.type(alternateDuration) === "number"
+      (typeof alternateDuration === "number"
         ? alternateDuration
         : Pages.page && Pages.page.view.options.effects.window.show) || 0;
 
@@ -1338,18 +1325,18 @@ var Window = {
     var duration = Pages.page ? Pages.page.view.options.effects.window.hide : 0;
 
     hideQueue.queue(
-      $.proxy(function(next_stop) {
+      function(next_stop) {
         Pages.stop();
 
         // hide the spinner here so its effect ends early enough
         Spinner.hide();
 
         next_stop();
-      }, this)
+      }.bind(this)
     );
 
     hideQueue.queue(
-      $.proxy(function(next_unbinds) {
+      function(next_unbinds) {
         // ui
         UI.disable();
         UI.hide(null, duration);
@@ -1358,11 +1345,11 @@ var Window = {
         Keyboard.disable();
 
         next_unbinds();
-      }, this)
+      }.bind(this)
     );
 
     hideQueue.queue(
-      $.proxy(function(next_hidden) {
+      function(next_hidden) {
         var fx = 2;
 
         this._hide(function() {
@@ -1372,24 +1359,24 @@ var Window = {
         // using a timeout here removes a sharp visible edge of the window while fading out
         this.timers.set(
           "hide-overlay",
-          $.proxy(function() {
+          function() {
             Overlay.hide(function() {
               if (--fx < 1) next_hidden();
             }, duration);
-          }, this),
+          }.bind(this),
           duration > 1 ? Math.min(duration * 0.5, 150) : 1
         );
 
         // after we initiate hide, the next show() should bring up the UI
         // we to this using a flag
         this._first = true;
-      }, this)
+      }.bind(this)
     );
 
     // callbacks after resize in a separate queue
     // so we can stop the hideQueue without stopping the resize
     hideQueue.queue(
-      $.proxy(function(next_after_resize) {
+      function(next_after_resize) {
         this._reset();
 
         // all of the below we cannot safely call safely
@@ -1406,7 +1393,7 @@ var Window = {
 
         // afterHide callback
         var afterHide = Pages.page && Pages.page.view.options.afterHide;
-        if ($.type(afterHide) === "function") {
+        if (typeof afterHide === "function") {
           afterHide.call(Fresco);
         }
 
@@ -1418,22 +1405,22 @@ var Window = {
         this.detach();
 
         next_after_resize();
-      }, this)
+      }.bind(this)
     );
 
-    if ($.type(callback) === "function") {
+    if (typeof callback === "function") {
       hideQueue.queue(
-        $.proxy(function(next_callback) {
+        function(next_callback) {
           callback();
           next_callback();
-        }, this)
+        }.bind(this)
       );
     }
   },
 
   _hide: function(callback, alternateDuration) {
     var duration =
-      ($.type(alternateDuration) === "number"
+      (typeof alternateDuration === "number"
         ? alternateDuration
         : Pages.page && Pages.page.view.options.effects.window.hide) || 0;
 
@@ -1494,9 +1481,9 @@ var Window = {
     // store the page and show it
     this.page = Pages.show(
       position,
-      $.proxy(function() {
+      function() {
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -1561,9 +1548,9 @@ var Window = {
 
     return {
       previous: previous,
-      next: next
+      next: next,
     };
-  }
+  },
 };
 
 //  Keyboard
@@ -1574,7 +1561,7 @@ var Keyboard = {
   keyCode: {
     left: 37,
     right: 39,
-    esc: 27
+    esc: 27,
   },
 
   // enable is passed the keyboard option of a page, which can be false
@@ -1585,8 +1572,8 @@ var Keyboard = {
     if (!enabled) return;
 
     $(document)
-      .on("keydown", (this._onKeyDownHandler = $.proxy(this.onKeyDown, this)))
-      .on("keyup", (this._onKeyUpHandler = $.proxy(this.onKeyUp, this)));
+      .on("keydown", (this._onKeyDownHandler = this.onKeyDown.bind(this)))
+      .on("keyup", (this._onKeyUpHandler = this.onKeyUp.bind(this)));
 
     this.enabled = enabled;
   },
@@ -1641,7 +1628,7 @@ var Keyboard = {
       if (this.keyCode[key] === keyCode) return key;
     }
     return null;
-  }
+  },
 };
 
 var Page = (function() {
@@ -1877,11 +1864,11 @@ var Page = (function() {
       // overlap (this affects padding)
       $.each(
         ["x", "y"],
-        $.proxy(function(i, z) {
+        function(i, z) {
           if (this.view.options.overflow[z]) {
             this.element.addClass("fr-overflow-" + z);
           }
-        }, this)
+        }.bind(this)
       );
 
       // add the type
@@ -1928,9 +1915,9 @@ var Page = (function() {
 
       $.each(
         pages,
-        $.proxy(function(i, page) {
+        function(i, page) {
           page.preload();
-        }, this)
+        }.bind(this)
       );
     },
 
@@ -1954,7 +1941,7 @@ var Page = (function() {
 
       this.preloadReady = new ImageReady(
         this.image[0],
-        $.proxy(function(imageReady) {
+        function(imageReady) {
           // mark this page as loaded, without hiding the spinner
           this.loaded = true;
           _loadedUrlCache[this.view.url] = true;
@@ -1964,14 +1951,14 @@ var Page = (function() {
 
           this.dimensions = {
             width: imageReady.img.naturalWidth,
-            height: imageReady.img.naturalHeight
+            height: imageReady.img.naturalHeight,
           };
-        }, this),
+        }.bind(this),
         null,
         {
           // have the preload always use naturalWidth,
           // this avoid an extra new Image() request
-          method: "naturalWidth"
+          method: "naturalWidth",
         }
       );
     },
@@ -1997,9 +1984,9 @@ var Page = (function() {
       if (this.view.options.spinner) {
         // && !_loadedUrlCache[this.view.url]
         this._spinnerDelay = setTimeout(
-          $.proxy(function() {
+          function() {
             Spinner.show();
-          }, this),
+          }.bind(this),
           this.view.options.spinnerDelay || 0
         );
       }
@@ -2014,18 +2001,18 @@ var Page = (function() {
 
           this.imageReady = new ImageReady(
             this.image[0],
-            $.proxy(function(imageReady) {
+            function(imageReady) {
               // mark as loaded
               this._markAsLoaded();
 
               this.setDimensions({
                 width: imageReady.img.naturalWidth,
-                height: imageReady.img.naturalHeight
+                height: imageReady.img.naturalHeight,
               });
 
               if (callback) callback();
-            }, this),
-            $.proxy(function() {
+            }.bind(this),
+            function() {
               // mark as loaded
               this._markAsLoaded();
 
@@ -2039,16 +2026,16 @@ var Page = (function() {
 
               this.setDimensions({
                 width: this.error.outerWidth(),
-                height: this.error.outerHeight()
+                height: this.error.outerHeight(),
               });
 
               // allow resizing
               this.error.css({ width: "100%", height: "100%" });
 
               if (callback) callback();
-            }, this),
+            }.bind(this),
             {
-              method: this.view.options.loadedMethod
+              method: this.view.options.loadedMethod,
             }
           );
 
@@ -2057,17 +2044,17 @@ var Page = (function() {
         case "vimeo":
           this.vimeoReady = new VimeoReady(
             this.view.url,
-            $.proxy(function(data) {
+            function(data) {
               // mark as loaded
               this._markAsLoaded();
 
               this.setDimensions({
                 width: data.dimensions.width,
-                height: data.dimensions.height
+                height: data.dimensions.height,
               });
 
               if (callback) callback();
-            }, this)
+            }.bind(this)
           );
           break;
 
@@ -2077,7 +2064,7 @@ var Page = (function() {
 
           this.setDimensions({
             width: this.view.options.width,
-            height: this.view.options.height
+            height: this.view.options.height,
           });
 
           if (callback) callback();
@@ -2093,7 +2080,7 @@ var Page = (function() {
         var opts = this.view.options,
           bounds = {
             width: opts.maxWidth ? opts.maxWidth : this.dimensions.width,
-            height: opts.maxHeight ? opts.maxHeight : this.dimensions.height
+            height: opts.maxHeight ? opts.maxHeight : this.dimensions.height,
           };
 
         this.dimensions = Fit.within(bounds, this.dimensions);
@@ -2135,7 +2122,7 @@ var Page = (function() {
         queryString = $.param(playerVars),
         urls = {
           vimeo: protocol + "//player.vimeo.com/video/{id}?{queryString}",
-          youtube: protocol + "//www.youtube.com/embed/{id}?{queryString}"
+          youtube: protocol + "//www.youtube.com/embed/{id}?{queryString}",
         },
         src = urls[this.view.type]
           .replace("{id}", this.view._data.id)
@@ -2150,7 +2137,7 @@ var Page = (function() {
             src: src,
             height: this._contentDimensions.height,
             width: this._contentDimensions.width,
-            frameborder: 0
+            frameborder: 0,
           }))
       );
 
@@ -2173,7 +2160,7 @@ var Page = (function() {
       shq.queue([]); // clear queue
 
       shq.queue(
-        $.proxy(function(next_stopped_inactive) {
+        function(next_stopped_inactive) {
           // hide the spinner only if it's visible, and when this page doesn't need loading
           var needsLoading =
             this.view.options.spinner && !_loadedUrlCache[this.view.url];
@@ -2183,44 +2170,44 @@ var Page = (function() {
 
           Pages.stopInactive();
           next_stopped_inactive();
-        }, this)
+        }.bind(this)
       );
 
       // update the mode is something we can do instantly
       shq.queue(
-        $.proxy(function(next_updated_UI) {
+        function(next_updated_UI) {
           this.updateUI(); // first this page
           UI.set(this._ui); // then the window to match
           next_updated_UI();
-        }, this)
+        }.bind(this)
       );
 
       // keyboard, enabled here so escape can be pressed on load
       shq.queue(
-        $.proxy(function(next_keyboard) {
+        function(next_keyboard) {
           Keyboard.enable(this.view.options.keyboard);
           next_keyboard();
-        }, this)
+        }.bind(this)
       );
 
       // load
       shq.queue(
-        $.proxy(function(next_loaded) {
+        function(next_loaded) {
           // skin spinner
           Spinner.setSkin(this.view.options.skin);
 
           // load
           this.load(
-            $.proxy(function() {
+            function() {
               this.preloadSurroundingImages();
               next_loaded();
-            }, this)
+            }.bind(this)
           );
-        }, this)
+        }.bind(this)
       );
 
       shq.queue(
-        $.proxy(function(next_utility) {
+        function(next_utility) {
           this.raise();
 
           Window.setSkin(this.view.options.skin);
@@ -2232,33 +2219,31 @@ var Page = (function() {
           Window.adjustToScroll();
 
           next_utility();
-        }, this)
+        }.bind(this)
       );
 
       // vimeo and youtube use this for insertion
       if (this.isVideo()) {
         shq.queue(
-          $.proxy(function(next_video_inserted) {
-            this.insertVideo(
-              $.proxy(function() {
-                next_video_inserted();
-              })
-            );
-          }, this)
+          function(next_video_inserted) {
+            this.insertVideo(function() {
+              next_video_inserted();
+            });
+          }.bind(this)
         );
       }
 
       // if we're not syncing, hide other visible pages before this one
       if (!this.view.options.sync) {
         shq.queue(
-          $.proxy(function(next_synced) {
+          function(next_synced) {
             Pages.hideInactive(next_synced);
-          }, this)
+          }.bind(this)
         );
       }
 
       shq.queue(
-        $.proxy(function(next_shown) {
+        function(next_shown) {
           var fx = 3,
             duration = this.view.options.effects.content.show;
 
@@ -2270,7 +2255,7 @@ var Page = (function() {
           if (!Window.visible) {
             duration = this.view.options.effects.window.show;
 
-            if ($.type(this.view.options.onShow) === "function") {
+            if (typeof this.view.options.onShow === "function") {
               this.view.options.onShow.call(Fresco);
             }
           }
@@ -2312,27 +2297,27 @@ var Page = (function() {
           // call afterPosition right after starting the _show() but within
           // this queue step so triggers before the animation completes
           var afterPosition = this.view.options.afterPosition;
-          if ($.type(afterPosition) === "function") {
+          if (typeof afterPosition === "function") {
             afterPosition.call(Fresco, this._position);
           }
-        }, this)
+        }.bind(this)
       );
 
       shq.queue(
-        $.proxy(function(next_set_visible) {
+        function(next_set_visible) {
           this._visible = true;
 
           if (callback) callback();
 
           next_set_visible();
-        }, this)
+        }.bind(this)
       );
     },
 
     _show: function(callback, alternateDuration) {
       var duration = !Window.visible
         ? 0
-        : $.type(alternateDuration) === "number"
+        : typeof alternateDuration === "number"
         ? alternateDuration
         : this.view.options.effects.content.show;
 
@@ -2354,7 +2339,7 @@ var Page = (function() {
       this.abort();
 
       var duration =
-        $.type(alternateDuration) === "number"
+        typeof alternateDuration === "number"
           ? alternateDuration
           : this.view.options.effects.content.hide;
 
@@ -2370,12 +2355,12 @@ var Page = (function() {
           duration,
           0,
           "frescoEaseInCubic",
-          $.proxy(function() {
+          function() {
             this.element.hide();
             this._visible = false;
             Pages.removeTracking(this._position);
             if (callback) callback();
-          }, this)
+          }.bind(this)
         );
     },
 
@@ -2566,7 +2551,7 @@ var Page = (function() {
 
       var padding = {
         left: parseInt(container.css("padding-left")),
-        top: parseInt(container.css("padding-top"))
+        top: parseInt(container.css("padding-top")),
       };
 
       // if the ui is outside and we're showing a position, it might be larger then left padding
@@ -2575,11 +2560,11 @@ var Page = (function() {
         var positionWidth = 0;
 
         this._whileVisible(
-          $.proxy(function() {
+          function() {
             if (this._positionOutside.is(":visible")) {
               positionWidth = this._positionOutside.outerWidth(true);
             }
-          }, this)
+          }.bind(this)
         );
 
         if (positionWidth > padding.left) {
@@ -2592,7 +2577,7 @@ var Page = (function() {
 
       var fitOptions = {
         width: true,
-        height: this._noOverflow ? true : !this.view.options.overflow.y
+        height: this._noOverflow ? true : !this.view.options.overflow.y,
       };
 
       var fitted = Fit.within(bounds, dimensions, fitOptions),
@@ -2620,7 +2605,7 @@ var Page = (function() {
             extraShowElements = this.caption;
 
             this._whileVisible(
-              $.proxy(function() {
+              function() {
                 var count = 0,
                   attempts = 2;
 
@@ -2635,7 +2620,7 @@ var Page = (function() {
                         height: Math.max(
                           contentDimensions.height - (infoHeight - spaceBottom),
                           0
-                        ) // prevents NaN
+                        ), // prevents NaN
                       },
                       contentDimensions,
                       fitOptions
@@ -2649,8 +2634,6 @@ var Page = (function() {
                 infoHeight = this._getInfoHeight(contentDimensions.width);
                 var infoShowLimit = 0.5; //this.view.options.infoShowLimit;
 
-                // console.log(infoHeight, contentDimensions.height, bounds.height);
-                // console.log(infoHeight + contentDimensions.height, '>', bounds.height);
                 if (
                   // too much overflow after resizing the info box to the content area
                   (!this.view.options.overflow.y &&
@@ -2660,35 +2643,26 @@ var Page = (function() {
                   // info height is >= 50% of image height
                   (infoShowLimit &&
                     infoHeight >= infoShowLimit * contentDimensions.height)
-                  //|| (infoHide && infoHide.width
-                  //  && infoHeight >= infoHide.width * contentDimensions.width) // info height is >= 60% of image width
                 ) {
                   // info is almost a square compared to the image width
-                  // console.log('hiding caption', infoHeight, infoShowLimit * contentDimensions.height,
-                  // (!this.view.options.overflow.y && (infoHeight + contentDimensions.height > bounds.height)));
-                  // console.log(infoHeight, contentDimensions.height, bounds.height);
-
-                  // console.log((!this.view.options.overflow.y && (infoHeight + contentDimensions.height > bounds.height)));
-                  // console.log(infoHeight, contentDimensions.height, bounds.height);
-                  // console.log('disabling caption, okay');
                   infoCaption = false;
                   infoHeight = 0;
                   contentDimensions = preScale;
                 }
-              }, this),
+              }.bind(this),
               extraShowElements
             );
           } // end caption
 
           if (info) {
             info.css({
-              width: contentDimensions.width + "px"
+              width: contentDimensions.width + "px",
             });
           }
 
           backgroundDimensions = {
             width: contentDimensions.width,
-            height: contentDimensions.height + infoHeight
+            height: contentDimensions.height + infoHeight,
           };
 
           break;
@@ -2699,7 +2673,7 @@ var Page = (function() {
             extraShowElements = caption;
 
             this._whileVisible(
-              $.proxy(function() {
+              function() {
                 infoHeight = this._getInfoHeight(contentDimensions.width);
                 var infoShowLimit = 0.45;
 
@@ -2711,7 +2685,7 @@ var Page = (function() {
                   infoCaption = false;
                   infoHeight = 0;
                 }
-              }, this),
+              }.bind(this),
               extraShowElements
             );
           }
@@ -2728,7 +2702,7 @@ var Page = (function() {
           }
 
           this._whileVisible(
-            $.proxy(function() {
+            function() {
               // make the caption 100% width
               if (caption || pos) {
                 info.css({ width: "100%" });
@@ -2756,14 +2730,14 @@ var Page = (function() {
               contentDimensions = Fit.within(
                 {
                   width: bounds.width,
-                  height: Math.max(0, bounds.height - infoHeight)
+                  height: Math.max(0, bounds.height - infoHeight),
                 },
                 contentDimensions,
                 fitOptions
               );
 
               backgroundDimensions = contentDimensions;
-            }, this),
+            }.bind(this),
             extraElements
           );
 
@@ -2804,7 +2778,7 @@ var Page = (function() {
           backgroundDimensions.height +
           (this._ui === "fullclick" ? infoHeight : 0) -
           Window._boxDimensions.height,
-        x: 0
+        x: 0,
       };
 
       this._track =
@@ -2834,11 +2808,11 @@ var Page = (function() {
           Window._boxDimensions.height * 0.5 -
           backgroundDimensions.height * 0.5,
         left:
-          Window._boxDimensions.width * 0.5 - backgroundDimensions.width * 0.5
+          Window._boxDimensions.width * 0.5 - backgroundDimensions.width * 0.5,
       };
       var infoPosition = {
         top: contentPosition.top + contentDimensions.height,
-        left: contentPosition.left
+        left: contentPosition.left,
       };
       var containerBottom = 0;
 
@@ -2853,7 +2827,7 @@ var Page = (function() {
           infoPosition = {
             top: Window._boxDimensions.height - this._infoHeight,
             left: 0,
-            bottom: "auto"
+            bottom: "auto",
           };
 
           containerBottom = this._infoHeight;
@@ -2864,7 +2838,7 @@ var Page = (function() {
           infoPosition = {
             top: "auto",
             left: 0,
-            bottom: 0
+            bottom: 0,
           };
 
           break;
@@ -2894,7 +2868,7 @@ var Page = (function() {
 
             // close X
             this.closeInside.css({
-              top: top
+              top: top,
             });
 
             if (this._total > 1) {
@@ -2913,7 +2887,7 @@ var Page = (function() {
                 center = this.overlap.y * 0.5;
 
               buttons.css({
-                "margin-top": pnMarginTop + (top - center)
+                "margin-top": pnMarginTop + (top - center),
               });
 
               // position inside
@@ -2937,7 +2911,7 @@ var Page = (function() {
       this.container.css({ bottom: containerBottom });
       this.content.css(contentPosition);
       this.background.css(contentPosition);
-    }
+    },
   });
 
   return Page;
@@ -2960,9 +2934,9 @@ var Pages = {
     // add pages for all these views
     $.each(
       views,
-      $.proxy(function(i, view) {
+      function(i, view) {
         this.pages.push(new Page(view, i + 1, this.views.length));
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -2983,9 +2957,9 @@ var Pages = {
     Window.updateBoxDimensions(); // these are based on Thumbnails, so after thumbnails
 
     page.show(
-      $.proxy(function() {
+      function() {
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -3026,11 +3000,11 @@ var Pages = {
 
     $.each(
       this.pages,
-      $.proxy(function(i, page) {
+      function(i, page) {
         if (page.uid !== this.page.uid) {
           _pages.push(page);
         }
-      }, this)
+      }.bind(this)
     );
 
     var fx = 0 + _pages.length;
@@ -3051,11 +3025,11 @@ var Pages = {
   stopInactive: function() {
     $.each(
       this.pages,
-      $.proxy(function(i, page) {
+      function(i, page) {
         if (page.uid !== this.page.uid /* && !page.preloading*/) {
           page.stop();
         }
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -3073,10 +3047,10 @@ var Pages = {
       this.updatePositions();
     } else {
       this._tracking_timer = setTimeout(
-        $.proxy(function() {
+        function() {
           this.setXY({ x: event.pageX, y: event.pageY });
           this.updatePositions();
-        }, this),
+        }.bind(this),
         30
       );
     }
@@ -3096,7 +3070,7 @@ var Pages = {
     // shift x/y positions to get a correct position after load.
     $(document.documentElement).on(
       "mousemove",
-      (this._handleTracking = $.proxy(this.handleTracking, this))
+      (this._handleTracking = this.handleTracking.bind(this))
     );
   },
 
@@ -3169,7 +3143,7 @@ var Pages = {
     var xyp = {
       //x: Math.min(Math.max(xy.x / dimensions.width, 0), 1),
       x: 0,
-      y: Math.min(Math.max(xy.y / dimensions.height, 0), 1)
+      y: Math.min(Math.max(xy.y / dimensions.height, 0), 1),
     };
 
     // safety should be a percentage
@@ -3179,7 +3153,7 @@ var Pages = {
 
     $.each(
       "y".split(" "),
-      $.proxy(function(i, z) {
+      function(i, z) {
         // safety should be a percentage, so convert pixel to %
         safety[z] = Math.min(Math.max(safetyPX / dimensions[wh[z]], 0), 1);
 
@@ -3187,7 +3161,7 @@ var Pages = {
         xyp[z] *= 1 + 2 * safety[z]; // increase the range by 2*%
         xyp[z] -= safety[z]; // shift back by %
         xyp[z] = Math.min(Math.max(xyp[z], 0), 1); // chop of the sides
-      }, this)
+      }.bind(this)
     );
 
     this.setXYP(xyp);
@@ -3206,7 +3180,7 @@ var Pages = {
     $.each(this._tracking, function(i, page) {
       page.position();
     });
-  }
+  },
 };
 
 function View() {
@@ -3218,7 +3192,7 @@ $.extend(View.prototype, {
       data = {};
 
     // string -> element
-    if ($.type(object) === "string") {
+    if (typeof object === "string") {
       // turn the string into an element
       object = { url: object };
     }
@@ -3237,7 +3211,7 @@ $.extend(View.prototype, {
         options:
           (element.attr("data-fresco-options") &&
             eval("({" + element.attr("data-fresco-options") + "})")) ||
-          {}
+          {},
       };
     }
 
@@ -3274,7 +3248,7 @@ $.extend(View.prototype, {
     $.extend(this, object);
 
     return this;
-  }
+  },
 });
 
 // Spinner
@@ -3294,9 +3268,9 @@ var Spinner = {
 
     this.element.on(
       "click",
-      $.proxy(function() {
+      function() {
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     // prevent mousewheel scroll
@@ -3326,7 +3300,7 @@ var Spinner = {
 
     this._dimensions = {
       width: this.element.outerWidth(),
-      height: this.element.outerHeight()
+      height: this.element.outerHeight(),
     };
 
     if (!attached) this.detach();
@@ -3353,7 +3327,7 @@ var Spinner = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.spinner.show) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
@@ -3366,16 +3340,16 @@ var Spinner = {
     var pDuration =
         (Pages.page && Pages.page.view.options.effects.spinner.hide) || 0,
       duration =
-        ($.type(alternateDuration) === "number"
+        (typeof alternateDuration === "number"
           ? alternateDuration
           : pDuration) || 0;
 
     this.element.stop(true).fadeOut(
       duration || 0,
-      $.proxy(function() {
+      function() {
         this.detach();
         if (callback) callback();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -3405,9 +3379,9 @@ var Spinner = {
       left:
         Window._boxPosition.left +
         Window._boxDimensions.width * 0.5 -
-        this._dimensions.width * 0.5
+        this._dimensions.width * 0.5,
     });
-  }
+  },
 };
 
 // API
@@ -3430,11 +3404,11 @@ var _Fresco = {
       .on(
         "click",
         ".fresco[href]",
-        (this._delegateHandler = $.proxy(this.delegate, this))
+        (this._delegateHandler = this.delegate.bind(this))
       )
       // observe document clicks for XY setting, this makes sure that
       // positioning is correct when opening overflow with the API
-      .on("click", (this._setClickXYHandler = $.proxy(this.setClickXY, this)));
+      .on("click", (this._setClickXYHandler = this.setClickXY.bind(this)));
   },
 
   stopDelegating: function() {
@@ -3451,7 +3425,7 @@ var _Fresco = {
   setClickXY: function(event) {
     Pages.setXY({
       x: event.pageX,
-      y: event.pageY
+      y: event.pageY,
     });
   },
 
@@ -3477,7 +3451,7 @@ var _Fresco = {
     var options = arguments[1] || {},
       position = arguments[2];
 
-    if (arguments[1] && $.type(arguments[1]) === "number") {
+    if (arguments[1] && typeof arguments[1] === "number") {
       position = arguments[1];
       options = {};
     }
@@ -3486,7 +3460,7 @@ var _Fresco = {
       object_type,
       isElement = _.isElement(object);
 
-    switch ((object_type = $.type(object))) {
+    switch ((object_type = typeof object)) {
       case "string":
       case "object":
         var view = new View(object, options),
@@ -3584,7 +3558,7 @@ var _Fresco = {
   showFallback: (function() {
     function getUrl(object) {
       var url,
-        type = $.type(object);
+        type = typeof object;
 
       if (type === "string") {
         url = object;
@@ -3606,7 +3580,7 @@ var _Fresco = {
       var url = getUrl(object);
       if (url) window.location.href = url;
     };
-  })()
+  })(),
 };
 
 $.extend(Fresco, {
@@ -3640,7 +3614,7 @@ $.extend(Fresco, {
   setDefaultSkin: function(skin) {
     Options.defaults.skin = skin;
     return this;
-  }
+  },
 });
 
 // fallback for old browsers without full position:fixed support
@@ -3650,10 +3624,10 @@ if (
   // old Android
   // added a version check because Firefox on Android doesn't have a
   // version number above 4.2 anymore
-  ($.type(Browser.Android) === "number" && Browser.Android < 3) ||
+  (typeof Browser.Android === "number" && Browser.Android < 3) ||
   // old WebKit
   (Browser.MobileSafari &&
-    ($.type(Browser.WebKit) === "number" && Browser.WebKit < 533.18))
+    (typeof Browser.WebKit === "number" && Browser.WebKit < 533.18))
 ) {
   // we'll reset the show function
   _Fresco.show = _Fresco.showFallback;
@@ -3670,7 +3644,7 @@ var Thumbnails = {
     this._vars = {
       thumbnail: {},
       thumbnailFrame: {},
-      thumbnails: {}
+      thumbnails: {},
     };
 
     this.build();
@@ -3733,7 +3707,7 @@ var Thumbnails = {
     this._slider.delegate(
       ".fr-thumbnail",
       "click",
-      $.proxy(function(event) {
+      function(event) {
         event.stopPropagation();
 
         var thumbnail = $(event.target).closest(".fr-thumbnail")[0];
@@ -3743,7 +3717,7 @@ var Thumbnails = {
           this.setActive(position);
           Window.setPosition(position);
         }
-      }, this)
+      }.bind(this)
     );
 
     // prevent bubbling on slider click, so you can safely click next to a thumbnail
@@ -3752,8 +3726,8 @@ var Thumbnails = {
     });
 
     // previous / next
-    this._previous.bind("click", $.proxy(this.previousPage, this));
-    this._next.bind("click", $.proxy(this.nextPage, this));
+    this._previous.bind("click", this.previousPage.bind(this));
+    this._next.bind("click", this.nextPage.bind(this));
   },
 
   load: function(views) {
@@ -3766,21 +3740,21 @@ var Thumbnails = {
       disabled = false;
     $.each(
       views,
-      $.proxy(function(i, view) {
+      function(i, view) {
         if (view.options.thumbnails === "vertical") {
           orientation = "vertical";
         }
         if (!view.options.thumbnails) disabled = true;
-      }, this)
+      }.bind(this)
     );
     this.setOrientation(orientation);
     this._disabledGroup = disabled;
 
     $.each(
       views,
-      $.proxy(function(i, view) {
+      function(i, view) {
         this._thumbnails.push(new Thumbnail(view, i + 1));
-      }, this)
+      }.bind(this)
     );
 
     this.fitToViewport();
@@ -3885,17 +3859,17 @@ var Thumbnails = {
     $.extend(vars.thumbnails, {
       height: height + marginTotal, // we store as z just to make dimensioning later easier
       width: viewport[isHorizontal ? "width" : "height"],
-      paddingTop: paddingTop
+      paddingTop: paddingTop,
     });
 
     $.extend(vars.thumbnail, {
       height: thumbnailHeight,
-      width: thumbnailHeight
+      width: thumbnailHeight,
     });
 
     $.extend(vars.thumbnailFrame, {
       width: thumbnailHeight + paddingLeft * 2,
-      height: height
+      height: height,
     });
 
     // previous/next
@@ -3903,13 +3877,13 @@ var Thumbnails = {
       previous: {
         width: next["inner" + _.String.capitalize(_width)](),
         marginLeft: parseInt(previous.css("margin-" + _left)) || 0, // left
-        marginRight: parseInt(previous.css("margin-" + _swapZ[_left])) || 0 // right
+        marginRight: parseInt(previous.css("margin-" + _swapZ[_left])) || 0, // right
       },
       next: {
         width: next["inner" + _.String.capitalize(_width)](),
         marginLeft: parseInt(next.css("margin-" + _left)) || 0, // left
-        marginRight: parseInt(next.css("margin-" + _swapZ[_left])) || 0 // right
-      }
+        marginRight: parseInt(next.css("margin-" + _swapZ[_left])) || 0, // right
+      },
     };
 
     // how many pages and ipp
@@ -3968,17 +3942,17 @@ var Thumbnails = {
 
     vars.wrapper = {
       width: wrapperWidth + 1, // IE fix
-      height: height
+      height: height,
     };
 
     vars.thumbs = {
       width: thumbsWidth,
-      height: height
+      height: height,
     };
 
     vars.slide = {
       width: thumbs * thumbnailOuterWidth + 1, // IE fix
-      height: height
+      height: height,
     };
 
     if (!w_vis) win.hide();
@@ -4000,7 +3974,7 @@ var Thumbnails = {
         : this._vars.thumbnails.height,
       height: isHorizontal
         ? this._vars.thumbnails.height
-        : this._vars.thumbnails.width
+        : this._vars.thumbnails.width,
     };
   },
 
@@ -4024,17 +3998,17 @@ var Thumbnails = {
 
     this._thumbs.css({
       width: vars.thumbs[isHorizontal ? "width" : "height"],
-      height: vars.thumbs[isHorizontal ? "height" : "width"]
+      height: vars.thumbs[isHorizontal ? "height" : "width"],
     });
 
     this._slide.css({
       width: vars.slide[isHorizontal ? "width" : "height"],
-      height: vars.slide[isHorizontal ? "height" : "width"]
+      height: vars.slide[isHorizontal ? "height" : "width"],
     });
 
     var wrapperCSS = {
       width: vars.wrapper[isHorizontal ? "width" : "height"],
-      height: vars.wrapper[isHorizontal ? "height" : "width"]
+      height: vars.wrapper[isHorizontal ? "height" : "width"],
     };
     wrapperCSS["margin-" + (isHorizontal ? "left" : "top")] =
       Math.round(-0.5 * vars.wrapper.width) + "px";
@@ -4135,10 +4109,10 @@ var Thumbnails = {
           : page
           ? page.view.options.effects.thumbnails.slide || 0
           : 0,
-        $.proxy(function() {
+        function() {
           // load all thumbnails on this page
           this.loadCurrentPage();
-        }, this)
+        }.bind(this)
       );
   },
 
@@ -4190,7 +4164,7 @@ var Thumbnails = {
 
   refresh: function() {
     if (this._position) this.setPosition(this._position);
-  }
+  },
 };
 
 // Thumbnail
@@ -4201,7 +4175,6 @@ $.extend(Thumbnail.prototype, {
   initialize: function(view, position) {
     this.view = view;
 
-    //this._dimensions = {};
     this._position = position;
 
     this.preBuild();
@@ -4233,7 +4206,7 @@ $.extend(Thumbnail.prototype, {
     if (this.view.type === "image") {
       this.thumbnail.addClass("fr-load-thumbnail").data("thumbnail", {
         view: this.view,
-        src: options.thumbnail || this.view.url
+        src: options.thumbnail || this.view.url,
       });
     }
 
@@ -4305,7 +4278,7 @@ $.extend(Thumbnail.prototype, {
 
     var thumbnail = this.view.options.thumbnail;
     var url =
-      thumbnail && $.type(thumbnail) === "boolean"
+      thumbnail && typeof thumbnail === "boolean"
         ? this.view.url
         : thumbnail || this.view.url;
 
@@ -4323,13 +4296,13 @@ $.extend(Thumbnail.prototype, {
             case "vimeo":
               this.vimeoThumbnail = new VimeoThumbnail(
                 this.view.url,
-                $.proxy(function(url) {
+                function(url) {
                   this._url = url;
                   this._load(url);
-                }, this),
-                $.proxy(function() {
+                }.bind(this),
+                function() {
                   this._error();
-                }, this)
+                }.bind(this)
               );
               break;
           }
@@ -4357,7 +4330,7 @@ $.extend(Thumbnail.prototype, {
 
     this.ready = new ImageReady(
       this.image[0],
-      $.proxy(function(imageready) {
+      function(imageready) {
         var img = imageready.img;
 
         // if the thumbnail has been removed before we finish,
@@ -4371,7 +4344,7 @@ $.extend(Thumbnail.prototype, {
         // store dimensions, used by resize
         this._dimensions = {
           width: img.naturalWidth,
-          height: img.naturalHeight
+          height: img.naturalHeight,
         };
 
         // set dimensions after having loaded
@@ -4379,12 +4352,12 @@ $.extend(Thumbnail.prototype, {
 
         // fadeout spinner
         this.show();
-      }, this),
-      $.proxy(function() {
+      }.bind(this),
+      function() {
         this._error();
-      }, this),
+      }.bind(this),
       {
-        method: this.view.options.loadedMethod
+        method: this.view.options.loadedMethod,
       }
     );
   },
@@ -4411,9 +4384,9 @@ $.extend(Thumbnail.prototype, {
     var fx = this.view.options.effects.thumbnail;
 
     this._delay = setTimeout(
-      $.proxy(function() {
+      function() {
         this.spinner.stop(true).fadeTo(fx.show || 0, 1);
-      }, this),
+      }.bind(this),
       this.view.options.spinnerDelay || 0
     );
   },
@@ -4448,7 +4421,8 @@ $.extend(Thumbnail.prototype, {
     // frame
     this.thumbnailFrame.css({
       width: Thumbnails._vars.thumbnailFrame[isHorizontal ? "width" : "height"],
-      height: Thumbnails._vars.thumbnailFrame[isHorizontal ? "height" : "width"]
+      height:
+        Thumbnails._vars.thumbnailFrame[isHorizontal ? "height" : "width"],
     });
 
     // position frame
@@ -4458,7 +4432,7 @@ $.extend(Thumbnail.prototype, {
         : Thumbnails._vars.thumbnailFrame.width * (this._position - 1),
       left: isHorizontal
         ? Thumbnails._vars.thumbnailFrame.width * (this._position - 1)
-        : 0
+        : 0,
     });
 
     if (!this.thumbnailWrapper) return;
@@ -4471,7 +4445,7 @@ $.extend(Thumbnail.prototype, {
       "margin-top": Math.round(-0.5 * thumbnail.height),
       "margin-left": Math.round(-0.5 * thumbnail.width),
       "margin-bottom": 0,
-      "margin-right": 0
+      "margin-right": 0,
     });
 
     // if there's no image, don't resize the rest
@@ -4479,7 +4453,7 @@ $.extend(Thumbnail.prototype, {
 
     var bounds = {
       width: thumbnail.width, //this.thumbnail.innerWidth(),
-      height: thumbnail.height //this.thumbnail.innerHeight()
+      height: thumbnail.height, //this.thumbnail.innerHeight()
     };
 
     var maxZ = Math.max(bounds.width, bounds.height);
@@ -4525,7 +4499,7 @@ $.extend(Thumbnail.prototype, {
     this.image
       .removeAttr("style") // remove the opacity
       .css($.extend({}, dimensions, { top: y, left: x }));
-  }
+  },
 });
 
 // UI Modes
@@ -4536,16 +4510,16 @@ var UI = {
     ".fr-content-element",
     ".fr-content",
     ".fr-content > .fr-stroke",
-    ".fr-content > .fr-stroke .fr-stroke-color"
+    ".fr-content > .fr-stroke .fr-stroke-color",
   ].join(", "),
 
   initialize: function(element) {
     // initialize the 3 different UI types
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         this[mode].initialize();
-      }, this)
+      }.bind(this)
     );
 
     // start with hidden ui
@@ -4585,9 +4559,9 @@ var UI = {
   enable: function() {
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         UI[mode][mode === this._ui ? "enable" : "disable"]();
-      }, this)
+      }.bind(this)
     );
 
     this._enabled = true;
@@ -4596,9 +4570,9 @@ var UI = {
   disable: function() {
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         UI[mode].disable();
-      }, this)
+      }.bind(this)
     );
 
     this._enabled = false;
@@ -4623,9 +4597,9 @@ var UI = {
   reset: function() {
     $.each(
       this._modes,
-      $.proxy(function(i, mode) {
+      function(i, mode) {
         UI[mode].reset();
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -4634,15 +4608,7 @@ var UI = {
     if (!page) return;
 
     this.set(page._ui);
-  } /*,
-
-  // sets the ui to use timers for and disabled timers
-  // on all other ui modes
-  setActiveTimers: function(ui) {
-    $.each(this._modes, function(i, mode) {
-      if (mode != ui) UI[mode].clearTimer();
-    });
-  }*/
+  },
 };
 
 UI.fullclick = {
@@ -4697,26 +4663,26 @@ UI.fullclick = {
     // events
     this._close.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         event.preventDefault();
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     this._previous.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.previous();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
 
     this._next.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.next();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -4759,18 +4725,18 @@ UI.fullclick = {
     Window._pages.on(
       "mouseup",
       ".fr-container",
-      (this._onMouseUpHandler = $.proxy(this._onMouseUp, this))
+      (this._onMouseUpHandler = this._onMouseUp.bind(this))
     );
 
     // track <> only on desktop
     if (!Support.mobileTouch) {
       Window.element
-        .on("mouseenter", (this._showHandler = $.proxy(this.show, this)))
-        .on("mouseleave", (this._hideHandler = $.proxy(this.hide, this)));
+        .on("mouseenter", (this._showHandler = this.show.bind(this)))
+        .on("mouseleave", (this._hideHandler = this.hide.bind(this)));
 
       Window.element.on(
         "mousemove",
-        (this._mousemoveHandler = $.proxy(function(event) {
+        (this._mousemoveHandler = function(event) {
           // Chrome has a bug that triggers mousemove events incorrectly
           // we have to work around this by comparing cursor positions
           // so only true mousemove events pass through:
@@ -4788,7 +4754,7 @@ UI.fullclick = {
 
           this.show();
           this.startTimer();
-        }, this))
+        }.bind(this))
       );
 
       // delegate <> mousemove/click states
@@ -4796,17 +4762,17 @@ UI.fullclick = {
         .on(
           "mousemove",
           ".fr-container",
-          (this._onMouseMoveHandler = $.proxy(this._onMouseMove, this))
+          (this._onMouseMoveHandler = this._onMouseMove.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-container",
-          (this._onMouseLeaveHandler = $.proxy(this._onMouseLeave, this))
+          (this._onMouseLeaveHandler = this._onMouseLeave.bind(this))
         )
         .on(
           "mouseenter",
           ".fr-container",
-          (this._onMouseEnterHandler = $.proxy(this._onMouseEnter, this))
+          (this._onMouseEnterHandler = this._onMouseEnter.bind(this))
         );
 
       // delegate moving onto the <> buttons
@@ -4815,23 +4781,17 @@ UI.fullclick = {
         .on(
           "mouseenter",
           ".fr-side",
-          (this._onSideMouseEnterHandler = $.proxy(
-            this._onSideMouseEnter,
-            this
-          ))
+          (this._onSideMouseEnterHandler = this._onSideMouseEnter.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-side",
-          (this._onSideMouseLeaveHandler = $.proxy(
-            this._onSideMouseLeave,
-            this
-          ))
+          (this._onSideMouseLeaveHandler = this._onSideMouseLeave.bind(this))
         );
 
       $(window).on(
         "scroll",
-        (this._onScrollHandler = $.proxy(this._onScroll, this))
+        (this._onScrollHandler = this._onScroll.bind(this))
       );
     }
   },
@@ -4889,7 +4849,7 @@ UI.fullclick = {
       css = { "margin-top": pnMarginTop - iH * 0.5 };
 
     var duration =
-      $.type(alternateDuration) === "number"
+      typeof alternateDuration === "number"
         ? alternateDuration
         : (Pages.page && Pages.page.view.options.effects.content.show) || 0;
 
@@ -5029,7 +4989,7 @@ UI.fullclick = {
       // and start a new one
       this.startTimer();
 
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -5048,14 +5008,14 @@ UI.fullclick = {
         .show();
     }
 
-    if ($.type(callback) === "function") callback();
+    if (typeof callback === "function") callback();
   },
 
   hide: function(callback) {
     // never hide the ui for video
     var type = Pages.page && Pages.page.view.type;
     if (!this._visible || (type && (type === "youtube" || type === "vimeo"))) {
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -5082,12 +5042,12 @@ UI.fullclick = {
     this.clearTimer();
     Window.timers.set(
       "ui-fullclick",
-      $.proxy(function() {
+      function() {
         this.hide();
-      }, this),
+      }.bind(this),
       Window.view ? Window.view.options.uiDelay : 0
     );
-  }
+  },
 };
 
 UI.inside = {
@@ -5111,7 +5071,7 @@ UI.inside = {
     Window._pages.on(
       "mouseup",
       ".fr-content",
-      (this._onMouseUpHandler = $.proxy(this._onMouseUp, this))
+      (this._onMouseUpHandler = this._onMouseUp.bind(this))
     );
 
     // buttons
@@ -5119,34 +5079,33 @@ UI.inside = {
       .on(
         "click",
         ".fr-content .fr-close",
-        $.proxy(function(event) {
+        function(event) {
           event.preventDefault();
           Window.hide();
-        }, this)
+        }.bind(this)
       )
       .on(
         "click",
         ".fr-content .fr-side-previous",
-        $.proxy(function(event) {
+        function(event) {
           Window.previous();
           this._onMouseMove(event); // update cursor
-        }, this)
+        }.bind(this)
       )
       .on(
         "click",
         ".fr-content .fr-side-next",
-        $.proxy(function(event) {
+        function(event) {
           Window.next();
           this._onMouseMove(event); // update cursor
-        }, this)
+        }.bind(this)
       );
 
     // overlay
     Window.element.on(
       "click",
       ".fr-container, .fr-thumbnails, .fr-thumbnails-wrapper",
-      (this._delegateOverlayCloseHandler = $.proxy(
-        this._delegateOverlayClose,
+      (this._delegateOverlayCloseHandler = this._delegateOverlayClose.bind(
         this
       ))
     );
@@ -5157,18 +5116,18 @@ UI.inside = {
         .on(
           "mouseenter",
           ".fr-content",
-          (this._showHandler = $.proxy(this.show, this))
+          (this._showHandler = this.show.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-content",
-          (this._hideHandler = $.proxy(this.hide, this))
+          (this._hideHandler = this.hide.bind(this))
         );
 
       Window.element.on(
         "mousemove",
         ".fr-content",
-        (this._mousemoveHandler = $.proxy(function(event) {
+        (this._mousemoveHandler = function(event) {
           // Chrome has a bug that triggers mousemove events incorrectly
           // we have to work around this by comparing cursor positions
           // so only true mousemove events pass through:
@@ -5186,17 +5145,17 @@ UI.inside = {
 
           this.show();
           this.startTimer();
-        }, this))
+        }.bind(this))
       );
 
       // block mousemove on caption and info
       Window._pages.on(
         "mousemove",
         ".fr-info, .fr-close",
-        $.proxy(function(event) {
+        function(event) {
           event.stopPropagation();
           this._onMouseLeave(event);
-        }, this)
+        }.bind(this)
       );
 
       // hovering info shouldn't hide it
@@ -5207,9 +5166,9 @@ UI.inside = {
       Window._pages.on(
         "mousemove",
         ".fr-info",
-        $.proxy(function() {
+        function() {
           this.clearTimer();
-        }, this)
+        }.bind(this)
       );
 
       // delegate <> mousemove/click states
@@ -5217,17 +5176,17 @@ UI.inside = {
         .on(
           "mousemove",
           ".fr-content",
-          (this._onMouseMoveHandler = $.proxy(this._onMouseMove, this))
+          (this._onMouseMoveHandler = this._onMouseMove.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-content",
-          (this._onMouseLeaveHandler = $.proxy(this._onMouseLeave, this))
+          (this._onMouseLeaveHandler = this._onMouseLeave.bind(this))
         )
         .on(
           "mouseenter",
           ".fr-content",
-          (this._onMouseEnterHandler = $.proxy(this._onMouseEnter, this))
+          (this._onMouseEnterHandler = this._onMouseEnter.bind(this))
         );
 
       // delegate moving onto the <> buttons
@@ -5236,23 +5195,17 @@ UI.inside = {
         .on(
           "mouseenter",
           ".fr-side",
-          (this._onSideMouseEnterHandler = $.proxy(
-            this._onSideMouseEnter,
-            this
-          ))
+          (this._onSideMouseEnterHandler = this._onSideMouseEnter.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-side",
-          (this._onSideMouseLeaveHandler = $.proxy(
-            this._onSideMouseLeave,
-            this
-          ))
+          (this._onSideMouseLeaveHandler = this._onSideMouseLeave.bind(this))
         );
 
       $(window).on(
         "scroll",
-        (this._onScrollHandler = $.proxy(this._onScroll, this))
+        (this._onScrollHandler = this._onScroll.bind(this))
       );
     }
   },
@@ -5475,7 +5428,7 @@ UI.inside = {
       // and start a new one
       this.startTimer();
 
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -5488,12 +5441,12 @@ UI.inside = {
       .addClass("fr-visible-inside-ui")
       .removeClass("fr-hidden-inside-ui");
 
-    if ($.type(callback) === "function") callback();
+    if (typeof callback === "function") callback();
   },
 
   hide: function(callback) {
     if (!this._visible) {
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -5504,7 +5457,7 @@ UI.inside = {
       .removeClass("fr-visible-inside-ui")
       .addClass("fr-hidden-inside-ui");
 
-    if ($.type(callback) === "function") callback();
+    if (typeof callback === "function") callback();
   },
 
   // timers
@@ -5521,12 +5474,12 @@ UI.inside = {
     this.clearTimer();
     Window.timers.set(
       "ui-inside",
-      $.proxy(function() {
+      function() {
         this.hide();
-      }, this),
+      }.bind(this),
       Window.view ? Window.view.options.uiDelay : 0
     );
-  }
+  },
 };
 
 UI.outside = {
@@ -5579,26 +5532,26 @@ UI.outside = {
     // events
     this._close.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         event.preventDefault();
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     this._previous.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.previous();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
 
     this._next.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.next();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -5634,15 +5587,14 @@ UI.outside = {
     Window.element.on(
       "mouseup",
       ".fr-content",
-      (this._onMouseUpHandler = $.proxy(this._onMouseUp, this))
+      (this._onMouseUpHandler = this._onMouseUp.bind(this))
     );
 
     // overlay
     Window.element.on(
       "click",
       ".fr-container, .fr-thumbnails, .fr-thumbnails-wrapper",
-      (this._delegateOverlayCloseHandler = $.proxy(
-        this._delegateOverlayClose,
+      (this._delegateOverlayCloseHandler = this._delegateOverlayClose.bind(
         this
       ))
     );
@@ -5654,17 +5606,17 @@ UI.outside = {
         .on(
           "mousemove",
           ".fr-content",
-          (this._onMouseMoveHandler = $.proxy(this._onMouseMove, this))
+          (this._onMouseMoveHandler = this._onMouseMove.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-content",
-          (this._onMouseLeaveHandler = $.proxy(this._onMouseLeave, this))
+          (this._onMouseLeaveHandler = this._onMouseLeave.bind(this))
         )
         .on(
           "mouseenter",
           ".fr-content",
-          (this._onMouseEnterHandler = $.proxy(this._onMouseEnter, this))
+          (this._onMouseEnterHandler = this._onMouseEnter.bind(this))
         );
 
       // delegate moving onto the <> buttons
@@ -5673,23 +5625,17 @@ UI.outside = {
         .on(
           "mouseenter",
           ".fr-side",
-          (this._onSideMouseEnterHandler = $.proxy(
-            this._onSideMouseEnter,
-            this
-          ))
+          (this._onSideMouseEnterHandler = this._onSideMouseEnter.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-side",
-          (this._onSideMouseLeaveHandler = $.proxy(
-            this._onSideMouseLeave,
-            this
-          ))
+          (this._onSideMouseLeaveHandler = this._onSideMouseLeave.bind(this))
         );
 
       $(window).on(
         "scroll",
-        (this._onScrollHandler = $.proxy(this._onScroll, this))
+        (this._onScrollHandler = this._onScroll.bind(this))
       );
     }
   },
@@ -5903,11 +5849,11 @@ UI.outside = {
     this._mayClickHoveringSide = false;
   },
 
-  clearTimer: function() {}
+  clearTimer: function() {},
 };
 
   // start
-  $(document).ready(function(event) {
+  $(function() {
     _Fresco.initialize();
   });
 

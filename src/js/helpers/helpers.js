@@ -16,8 +16,8 @@ var _ = {
     capitalize: function(string) {
       string = baseToString(string);
       return string && string.charAt(0).toUpperCase() + string.slice(1);
-    }
-  }
+    },
+  },
 };
 
 //mousewheel
@@ -55,7 +55,7 @@ var Fit = {
     var options = $.extend(
       {
         height: true,
-        width: true
+        width: true,
       },
       arguments[2] || {}
     );
@@ -91,7 +91,7 @@ var Fit = {
       // adjust current size, based on original dimensions
       size = {
         width: dimensions.width * scale,
-        height: dimensions.height * scale
+        height: dimensions.height * scale,
       };
       //}
 
@@ -103,7 +103,7 @@ var Fit = {
     size.height = Math.max(size.height, 0);
 
     return size;
-  }
+  },
 };
 
 // we only uses some of the jQueryUI easing functions
@@ -119,5 +119,5 @@ $.extend($.easing, {
 
   frescoEaseOutSine: function(x, t, b, c, d) {
     return c * Math.sin((t / d) * (Math.PI / 2)) + b;
-  }
+  },
 });

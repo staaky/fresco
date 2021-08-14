@@ -9,7 +9,7 @@ var Thumbnails = {
     this._vars = {
       thumbnail: {},
       thumbnailFrame: {},
-      thumbnails: {}
+      thumbnails: {},
     };
 
     this.build();
@@ -72,7 +72,7 @@ var Thumbnails = {
     this._slider.delegate(
       ".fr-thumbnail",
       "click",
-      $.proxy(function(event) {
+      function(event) {
         event.stopPropagation();
 
         var thumbnail = $(event.target).closest(".fr-thumbnail")[0];
@@ -82,7 +82,7 @@ var Thumbnails = {
           this.setActive(position);
           Window.setPosition(position);
         }
-      }, this)
+      }.bind(this)
     );
 
     // prevent bubbling on slider click, so you can safely click next to a thumbnail
@@ -91,8 +91,8 @@ var Thumbnails = {
     });
 
     // previous / next
-    this._previous.bind("click", $.proxy(this.previousPage, this));
-    this._next.bind("click", $.proxy(this.nextPage, this));
+    this._previous.bind("click", this.previousPage.bind(this));
+    this._next.bind("click", this.nextPage.bind(this));
   },
 
   load: function(views) {
@@ -105,21 +105,21 @@ var Thumbnails = {
       disabled = false;
     $.each(
       views,
-      $.proxy(function(i, view) {
+      function(i, view) {
         if (view.options.thumbnails === "vertical") {
           orientation = "vertical";
         }
         if (!view.options.thumbnails) disabled = true;
-      }, this)
+      }.bind(this)
     );
     this.setOrientation(orientation);
     this._disabledGroup = disabled;
 
     $.each(
       views,
-      $.proxy(function(i, view) {
+      function(i, view) {
         this._thumbnails.push(new Thumbnail(view, i + 1));
-      }, this)
+      }.bind(this)
     );
 
     this.fitToViewport();
@@ -224,17 +224,17 @@ var Thumbnails = {
     $.extend(vars.thumbnails, {
       height: height + marginTotal, // we store as z just to make dimensioning later easier
       width: viewport[isHorizontal ? "width" : "height"],
-      paddingTop: paddingTop
+      paddingTop: paddingTop,
     });
 
     $.extend(vars.thumbnail, {
       height: thumbnailHeight,
-      width: thumbnailHeight
+      width: thumbnailHeight,
     });
 
     $.extend(vars.thumbnailFrame, {
       width: thumbnailHeight + paddingLeft * 2,
-      height: height
+      height: height,
     });
 
     // previous/next
@@ -242,13 +242,13 @@ var Thumbnails = {
       previous: {
         width: next["inner" + _.String.capitalize(_width)](),
         marginLeft: parseInt(previous.css("margin-" + _left)) || 0, // left
-        marginRight: parseInt(previous.css("margin-" + _swapZ[_left])) || 0 // right
+        marginRight: parseInt(previous.css("margin-" + _swapZ[_left])) || 0, // right
       },
       next: {
         width: next["inner" + _.String.capitalize(_width)](),
         marginLeft: parseInt(next.css("margin-" + _left)) || 0, // left
-        marginRight: parseInt(next.css("margin-" + _swapZ[_left])) || 0 // right
-      }
+        marginRight: parseInt(next.css("margin-" + _swapZ[_left])) || 0, // right
+      },
     };
 
     // how many pages and ipp
@@ -307,17 +307,17 @@ var Thumbnails = {
 
     vars.wrapper = {
       width: wrapperWidth + 1, // IE fix
-      height: height
+      height: height,
     };
 
     vars.thumbs = {
       width: thumbsWidth,
-      height: height
+      height: height,
     };
 
     vars.slide = {
       width: thumbs * thumbnailOuterWidth + 1, // IE fix
-      height: height
+      height: height,
     };
 
     if (!w_vis) win.hide();
@@ -339,7 +339,7 @@ var Thumbnails = {
         : this._vars.thumbnails.height,
       height: isHorizontal
         ? this._vars.thumbnails.height
-        : this._vars.thumbnails.width
+        : this._vars.thumbnails.width,
     };
   },
 
@@ -363,17 +363,17 @@ var Thumbnails = {
 
     this._thumbs.css({
       width: vars.thumbs[isHorizontal ? "width" : "height"],
-      height: vars.thumbs[isHorizontal ? "height" : "width"]
+      height: vars.thumbs[isHorizontal ? "height" : "width"],
     });
 
     this._slide.css({
       width: vars.slide[isHorizontal ? "width" : "height"],
-      height: vars.slide[isHorizontal ? "height" : "width"]
+      height: vars.slide[isHorizontal ? "height" : "width"],
     });
 
     var wrapperCSS = {
       width: vars.wrapper[isHorizontal ? "width" : "height"],
-      height: vars.wrapper[isHorizontal ? "height" : "width"]
+      height: vars.wrapper[isHorizontal ? "height" : "width"],
     };
     wrapperCSS["margin-" + (isHorizontal ? "left" : "top")] =
       Math.round(-0.5 * vars.wrapper.width) + "px";
@@ -474,10 +474,10 @@ var Thumbnails = {
           : page
           ? page.view.options.effects.thumbnails.slide || 0
           : 0,
-        $.proxy(function() {
+        function() {
           // load all thumbnails on this page
           this.loadCurrentPage();
-        }, this)
+        }.bind(this)
       );
   },
 
@@ -529,5 +529,5 @@ var Thumbnails = {
 
   refresh: function() {
     if (this._position) this.setPosition(this._position);
-  }
+  },
 };

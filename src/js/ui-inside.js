@@ -19,7 +19,7 @@ UI.inside = {
     Window._pages.on(
       "mouseup",
       ".fr-content",
-      (this._onMouseUpHandler = $.proxy(this._onMouseUp, this))
+      (this._onMouseUpHandler = this._onMouseUp.bind(this))
     );
 
     // buttons
@@ -27,34 +27,33 @@ UI.inside = {
       .on(
         "click",
         ".fr-content .fr-close",
-        $.proxy(function(event) {
+        function(event) {
           event.preventDefault();
           Window.hide();
-        }, this)
+        }.bind(this)
       )
       .on(
         "click",
         ".fr-content .fr-side-previous",
-        $.proxy(function(event) {
+        function(event) {
           Window.previous();
           this._onMouseMove(event); // update cursor
-        }, this)
+        }.bind(this)
       )
       .on(
         "click",
         ".fr-content .fr-side-next",
-        $.proxy(function(event) {
+        function(event) {
           Window.next();
           this._onMouseMove(event); // update cursor
-        }, this)
+        }.bind(this)
       );
 
     // overlay
     Window.element.on(
       "click",
       ".fr-container, .fr-thumbnails, .fr-thumbnails-wrapper",
-      (this._delegateOverlayCloseHandler = $.proxy(
-        this._delegateOverlayClose,
+      (this._delegateOverlayCloseHandler = this._delegateOverlayClose.bind(
         this
       ))
     );
@@ -65,18 +64,18 @@ UI.inside = {
         .on(
           "mouseenter",
           ".fr-content",
-          (this._showHandler = $.proxy(this.show, this))
+          (this._showHandler = this.show.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-content",
-          (this._hideHandler = $.proxy(this.hide, this))
+          (this._hideHandler = this.hide.bind(this))
         );
 
       Window.element.on(
         "mousemove",
         ".fr-content",
-        (this._mousemoveHandler = $.proxy(function(event) {
+        (this._mousemoveHandler = function(event) {
           // Chrome has a bug that triggers mousemove events incorrectly
           // we have to work around this by comparing cursor positions
           // so only true mousemove events pass through:
@@ -94,17 +93,17 @@ UI.inside = {
 
           this.show();
           this.startTimer();
-        }, this))
+        }.bind(this))
       );
 
       // block mousemove on caption and info
       Window._pages.on(
         "mousemove",
         ".fr-info, .fr-close",
-        $.proxy(function(event) {
+        function(event) {
           event.stopPropagation();
           this._onMouseLeave(event);
-        }, this)
+        }.bind(this)
       );
 
       // hovering info shouldn't hide it
@@ -115,9 +114,9 @@ UI.inside = {
       Window._pages.on(
         "mousemove",
         ".fr-info",
-        $.proxy(function() {
+        function() {
           this.clearTimer();
-        }, this)
+        }.bind(this)
       );
 
       // delegate <> mousemove/click states
@@ -125,17 +124,17 @@ UI.inside = {
         .on(
           "mousemove",
           ".fr-content",
-          (this._onMouseMoveHandler = $.proxy(this._onMouseMove, this))
+          (this._onMouseMoveHandler = this._onMouseMove.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-content",
-          (this._onMouseLeaveHandler = $.proxy(this._onMouseLeave, this))
+          (this._onMouseLeaveHandler = this._onMouseLeave.bind(this))
         )
         .on(
           "mouseenter",
           ".fr-content",
-          (this._onMouseEnterHandler = $.proxy(this._onMouseEnter, this))
+          (this._onMouseEnterHandler = this._onMouseEnter.bind(this))
         );
 
       // delegate moving onto the <> buttons
@@ -144,23 +143,17 @@ UI.inside = {
         .on(
           "mouseenter",
           ".fr-side",
-          (this._onSideMouseEnterHandler = $.proxy(
-            this._onSideMouseEnter,
-            this
-          ))
+          (this._onSideMouseEnterHandler = this._onSideMouseEnter.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-side",
-          (this._onSideMouseLeaveHandler = $.proxy(
-            this._onSideMouseLeave,
-            this
-          ))
+          (this._onSideMouseLeaveHandler = this._onSideMouseLeave.bind(this))
         );
 
       $(window).on(
         "scroll",
-        (this._onScrollHandler = $.proxy(this._onScroll, this))
+        (this._onScrollHandler = this._onScroll.bind(this))
       );
     }
   },
@@ -383,7 +376,7 @@ UI.inside = {
       // and start a new one
       this.startTimer();
 
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -396,12 +389,12 @@ UI.inside = {
       .addClass("fr-visible-inside-ui")
       .removeClass("fr-hidden-inside-ui");
 
-    if ($.type(callback) === "function") callback();
+    if (typeof callback === "function") callback();
   },
 
   hide: function(callback) {
     if (!this._visible) {
-      if ($.type(callback) === "function") callback();
+      if (typeof callback === "function") callback();
       return;
     }
 
@@ -412,7 +405,7 @@ UI.inside = {
       .removeClass("fr-visible-inside-ui")
       .addClass("fr-hidden-inside-ui");
 
-    if ($.type(callback) === "function") callback();
+    if (typeof callback === "function") callback();
   },
 
   // timers
@@ -429,10 +422,10 @@ UI.inside = {
     this.clearTimer();
     Window.timers.set(
       "ui-inside",
-      $.proxy(function() {
+      function() {
         this.hide();
-      }, this),
+      }.bind(this),
       Window.view ? Window.view.options.uiDelay : 0
     );
-  }
+  },
 };

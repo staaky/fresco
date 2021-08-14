@@ -48,26 +48,26 @@ UI.outside = {
     // events
     this._close.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         event.preventDefault();
         Window.hide();
-      }, this)
+      }.bind(this)
     );
 
     this._previous.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.previous();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
 
     this._next.on(
       "click",
-      $.proxy(function(event) {
+      function(event) {
         Window.next();
         this._onMouseMove(event); // update cursor
-      }, this)
+      }.bind(this)
     );
   },
 
@@ -103,15 +103,14 @@ UI.outside = {
     Window.element.on(
       "mouseup",
       ".fr-content",
-      (this._onMouseUpHandler = $.proxy(this._onMouseUp, this))
+      (this._onMouseUpHandler = this._onMouseUp.bind(this))
     );
 
     // overlay
     Window.element.on(
       "click",
       ".fr-container, .fr-thumbnails, .fr-thumbnails-wrapper",
-      (this._delegateOverlayCloseHandler = $.proxy(
-        this._delegateOverlayClose,
+      (this._delegateOverlayCloseHandler = this._delegateOverlayClose.bind(
         this
       ))
     );
@@ -123,17 +122,17 @@ UI.outside = {
         .on(
           "mousemove",
           ".fr-content",
-          (this._onMouseMoveHandler = $.proxy(this._onMouseMove, this))
+          (this._onMouseMoveHandler = this._onMouseMove.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-content",
-          (this._onMouseLeaveHandler = $.proxy(this._onMouseLeave, this))
+          (this._onMouseLeaveHandler = this._onMouseLeave.bind(this))
         )
         .on(
           "mouseenter",
           ".fr-content",
-          (this._onMouseEnterHandler = $.proxy(this._onMouseEnter, this))
+          (this._onMouseEnterHandler = this._onMouseEnter.bind(this))
         );
 
       // delegate moving onto the <> buttons
@@ -142,23 +141,17 @@ UI.outside = {
         .on(
           "mouseenter",
           ".fr-side",
-          (this._onSideMouseEnterHandler = $.proxy(
-            this._onSideMouseEnter,
-            this
-          ))
+          (this._onSideMouseEnterHandler = this._onSideMouseEnter.bind(this))
         )
         .on(
           "mouseleave",
           ".fr-side",
-          (this._onSideMouseLeaveHandler = $.proxy(
-            this._onSideMouseLeave,
-            this
-          ))
+          (this._onSideMouseLeaveHandler = this._onSideMouseLeave.bind(this))
         );
 
       $(window).on(
         "scroll",
-        (this._onScrollHandler = $.proxy(this._onScroll, this))
+        (this._onScrollHandler = this._onScroll.bind(this))
       );
     }
   },
@@ -372,5 +365,5 @@ UI.outside = {
     this._mayClickHoveringSide = false;
   },
 
-  clearTimer: function() {}
+  clearTimer: function() {},
 };

@@ -21,7 +21,7 @@ function detectExtension(url) {
 var Type = {
   isVideo: function(type) {
     return /^(youtube|vimeo)$/.test(type);
-  }
+  },
 };
 
 var Types = {
@@ -34,9 +34,9 @@ var Types = {
       if (!this.detect()) return false;
 
       return {
-        extension: detectExtension(url)
+        extension: detectExtension(url),
       };
-    }
+    },
   },
 
   vimeo: {
@@ -51,9 +51,9 @@ var Types = {
       if (!id) return false;
 
       return {
-        id: id
+        id: id,
       };
-    }
+    },
   },
 
   youtube: {
@@ -75,8 +75,8 @@ var Types = {
       if (!id) return false;
 
       return {
-        id: id
+        id: id,
       };
-    }
-  }
+    },
+  },
 };

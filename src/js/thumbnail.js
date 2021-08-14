@@ -6,7 +6,6 @@ $.extend(Thumbnail.prototype, {
   initialize: function(view, position) {
     this.view = view;
 
-    //this._dimensions = {};
     this._position = position;
 
     this.preBuild();
@@ -38,7 +37,7 @@ $.extend(Thumbnail.prototype, {
     if (this.view.type === "image") {
       this.thumbnail.addClass("fr-load-thumbnail").data("thumbnail", {
         view: this.view,
-        src: options.thumbnail || this.view.url
+        src: options.thumbnail || this.view.url,
       });
     }
 
@@ -110,7 +109,7 @@ $.extend(Thumbnail.prototype, {
 
     var thumbnail = this.view.options.thumbnail;
     var url =
-      thumbnail && $.type(thumbnail) === "boolean"
+      thumbnail && typeof thumbnail === "boolean"
         ? this.view.url
         : thumbnail || this.view.url;
 
@@ -128,13 +127,13 @@ $.extend(Thumbnail.prototype, {
             case "vimeo":
               this.vimeoThumbnail = new VimeoThumbnail(
                 this.view.url,
-                $.proxy(function(url) {
+                function(url) {
                   this._url = url;
                   this._load(url);
-                }, this),
-                $.proxy(function() {
+                }.bind(this),
+                function() {
                   this._error();
-                }, this)
+                }.bind(this)
               );
               break;
           }
@@ -162,7 +161,7 @@ $.extend(Thumbnail.prototype, {
 
     this.ready = new ImageReady(
       this.image[0],
-      $.proxy(function(imageready) {
+      function(imageready) {
         var img = imageready.img;
 
         // if the thumbnail has been removed before we finish,
@@ -176,7 +175,7 @@ $.extend(Thumbnail.prototype, {
         // store dimensions, used by resize
         this._dimensions = {
           width: img.naturalWidth,
-          height: img.naturalHeight
+          height: img.naturalHeight,
         };
 
         // set dimensions after having loaded
@@ -184,12 +183,12 @@ $.extend(Thumbnail.prototype, {
 
         // fadeout spinner
         this.show();
-      }, this),
-      $.proxy(function() {
+      }.bind(this),
+      function() {
         this._error();
-      }, this),
+      }.bind(this),
       {
-        method: this.view.options.loadedMethod
+        method: this.view.options.loadedMethod,
       }
     );
   },
@@ -216,9 +215,9 @@ $.extend(Thumbnail.prototype, {
     var fx = this.view.options.effects.thumbnail;
 
     this._delay = setTimeout(
-      $.proxy(function() {
+      function() {
         this.spinner.stop(true).fadeTo(fx.show || 0, 1);
-      }, this),
+      }.bind(this),
       this.view.options.spinnerDelay || 0
     );
   },
@@ -253,7 +252,8 @@ $.extend(Thumbnail.prototype, {
     // frame
     this.thumbnailFrame.css({
       width: Thumbnails._vars.thumbnailFrame[isHorizontal ? "width" : "height"],
-      height: Thumbnails._vars.thumbnailFrame[isHorizontal ? "height" : "width"]
+      height:
+        Thumbnails._vars.thumbnailFrame[isHorizontal ? "height" : "width"],
     });
 
     // position frame
@@ -263,7 +263,7 @@ $.extend(Thumbnail.prototype, {
         : Thumbnails._vars.thumbnailFrame.width * (this._position - 1),
       left: isHorizontal
         ? Thumbnails._vars.thumbnailFrame.width * (this._position - 1)
-        : 0
+        : 0,
     });
 
     if (!this.thumbnailWrapper) return;
@@ -276,7 +276,7 @@ $.extend(Thumbnail.prototype, {
       "margin-top": Math.round(-0.5 * thumbnail.height),
       "margin-left": Math.round(-0.5 * thumbnail.width),
       "margin-bottom": 0,
-      "margin-right": 0
+      "margin-right": 0,
     });
 
     // if there's no image, don't resize the rest
@@ -284,7 +284,7 @@ $.extend(Thumbnail.prototype, {
 
     var bounds = {
       width: thumbnail.width, //this.thumbnail.innerWidth(),
-      height: thumbnail.height //this.thumbnail.innerHeight()
+      height: thumbnail.height, //this.thumbnail.innerHeight()
     };
 
     var maxZ = Math.max(bounds.width, bounds.height);
@@ -330,5 +330,5 @@ $.extend(Thumbnail.prototype, {
     this.image
       .removeAttr("style") // remove the opacity
       .css($.extend({}, dimensions, { top: y, left: x }));
-  }
+  },
 });
